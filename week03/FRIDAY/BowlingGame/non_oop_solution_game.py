@@ -2,7 +2,6 @@ def find_frames(frames):
 	frames_count = 0
 	result = []
 	current_score= -1
-	current_frame = ()
 	tenth_frame_shots = []
 	for el in frames:
 		if frames_count == 9:
