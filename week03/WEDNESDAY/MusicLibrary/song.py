@@ -1,4 +1,7 @@
 #Song(title="Odin", artist="Manowar", album="The Sons of Odin", length="3:44")
+
+import json
+
 class Song:
 	def validate_length(length):
 		allowed_symbols = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':']
@@ -35,6 +38,9 @@ class Song:
 	
 	def __repr__(self):
 		return str(self)
+
+	def toJSON(self):
+		return json.dumps(self.__dict__)
 
 if __name__ == '__main__':
 	def func(** kwargs):
