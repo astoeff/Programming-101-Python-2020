@@ -55,18 +55,20 @@ class Playable:
 		self.mana = regulate_player_attribute(attribute=self.mana)
 		return True
 
-	def attack(self, by):
-		if by == PLAYER_ATTACK_BY_WEAPON_STRING:
-			if self.weapon != None:
-				return self.weapon.damage
-			else:
-				return 0
-		elif by == PLAYER_ATTACK_BY_SPELL_STRING:
-			if self.can_cast():
-				return self.spell.damage
-			else:
-				return 0
-		raise ValueError('Invalid item for attack given')
+	def attack(self, **kwargs):
+		if 'by' in kwargs.keys():
+			if kwargs['by'] == PLAYER_ATTACK_BY_WEAPON_STRING:
+				if self.weapon != None:
+					return self.weapon.damage
+				else:
+					return 0
+			elif kwargs['by'] == PLAYER_ATTACK_BY_SPELL_STRING:
+				if self.can_cast():
+					return self.spell.damage
+				else:
+					return 0
+			raise ValueError('Invalid item for attack given')
+		
 
 
 	
