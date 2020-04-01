@@ -1,1 +1,1 @@
-# team ***LION***'s amazing dungeons and dragons game
+# team :lion: ***LION***'s amazing Dungeons and Pythons game
