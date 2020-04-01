@@ -216,7 +216,7 @@ class TestPLayable(unittest.TestCase):
 	#attack(by)
 	def test_with_given_player_and_invalid_by_as_argument_should_raise_exception(self):
 		pl = Player(health=100, mana=50)
-		by = 'magic'
+		by = None
 
 		exc = None
 		try:
