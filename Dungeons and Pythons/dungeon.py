@@ -1,7 +1,6 @@
 class Dungeon:
     def __init__(self, file):
-        self.file = file
-        self.map = self.to_string()
+        self.map = self.to_string(file)
         self.validate_map()
 
 
@@ -12,8 +11,8 @@ class Dungeon:
         return cls(file="test.txt")
 
 
-    def to_string(self):
-        with open(self.file, 'r') as f:
+    def to_string(self, file):
+        with open(file, 'r') as f:
             return f.read()
 
 
@@ -25,3 +24,17 @@ class Dungeon:
             if symbol == "G":
                 gates += 1
         assert gates == 1, "Number of gates != 1"
+
+
+    def print_map(self):
+        print(self.map)
+
+
+    def spawn(self, hero):
+        if 'H' in self.map:
+            return False
+        if 'S' in self.map:
+            self. map = self.map.replace('S', 'H', 1)
+            return True
+        else:
+            return False
