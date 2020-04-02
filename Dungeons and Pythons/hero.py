@@ -16,7 +16,7 @@ class Hero(Playable):
 	def attack(self, **kwargs):
 		result_from_attack = 0
 		try:
-			result_form_attack = super.attack(**kwargs)
+			result_form_attack = super().attack(**kwargs)
 		except Exception as e:
 			raise e
 		if result_form_attack != None:

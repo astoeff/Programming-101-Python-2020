@@ -1,7 +1,7 @@
 from playable import Playable
 
 class Enemy(Playable):
-	def __init__(self, name, title, health, mana, damage):
+	def __init__(self, health, mana, damage):
 		self.health = health
 		self.mana = mana
 		self.damage = damage
@@ -11,10 +11,10 @@ class Enemy(Playable):
 	def attack(self, **kwargs):
 		result_from_attack = 0
 		try:
-			result_form_attack = super.attack(**kwargs)
+			result_from_attack = super().attack(**kwargs)
 		except Exception as e:
 			raise e
-		if result_form_attack != None
-			return result_form_attack
+		if result_from_attack != None:
+			return result_from_attack
 		return self.damage
 		
