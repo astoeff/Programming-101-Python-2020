@@ -131,21 +131,215 @@ class TestDungeon(unittest.TestCase):
         self.assertTrue(spawned_successfully3, "cannot spawn")
 
 
-#     def test_move_hero(self):
-#         h = Hero(name="Bron", title="Dragonslayer", health=100, mana=100, mana_regeneration_rate=2)
-#         a = Dungeon.from_string(
-# '''S.##.....T
-# ..##..###.
-# #.###E###E
-# #.E...###.
-# ###T#####G'''
-# )
-#         a.spawn(h)
 
-#         moved_successfully = a.move_hero('right')
 
-#         self.assertTrue(moved_successfully, "cannot move")
+class TestMoveHero(unittest.TestCase):
+    def test_move_hero(self):
+        h = Hero(name="Bron", title="Dragonslayer", health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string(
+'''S.##.....T
+..##..###.
+#.###E###E
+#.E...###.
+###T#####G'''
+)
+        a.spawn(h)
 
+        moved_successfully = a.move_hero('right')
+
+        self.assertTrue(moved_successfully, "cannot move")
+
+
+    def test_move_hero_with_right_next_to_the_wall_should_return_false(self):
+        h = Hero(name="Bron", title="Dragonslayer", health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string(
+'''T.##.....S
+..##..###.
+#.###E###E
+#.E...###.
+###T#####G'''
+)
+        a.spawn(h)
+
+        moved_successfully = a.move_hero('right')
+
+        self.assertFalse(moved_successfully, "got out of the map")
+
+
+    def test_move_hero_with_right_should_move_the_hero(self):
+        h = Hero(name="Bron", title="Dragonslayer", health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string(
+'''S.##.....T
+..##..###.
+#.###E###E
+#.E...###.
+###T#####G'''
+)
+        expected = (
+'''.H##.....T
+..##..###.
+#.###E###E
+#.E...###.
+###T#####G'''
+)
+        a.spawn(h)
+
+        a.move_hero('right')
+
+        self.assertEqual(expected, a.map)
+
+
+    def test_move_hero_with_left_should_move_the_hero(self):
+        h = Hero(name="Bron", title="Dragonslayer", health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string(
+'''S.##.....T
+..##..###.
+#.###E###E
+#.E...###.
+###T#####G'''
+)
+        expected = (
+'''H.##.....T
+..##..###.
+#.###E###E
+#.E...###.
+###T#####G'''
+)
+        a.spawn(h)
+        a.move_hero('right')
+
+        a.move_hero('left')
+
+        self.assertEqual(expected, a.map)
+
+
+    def test_move_hero_with_left_next_to_the_wall_should_return_false(self):
+        h = Hero(name="Bron", title="Dragonslayer", health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string(
+'''S.##.....T
+..##..###.
+#.###E###E
+#.E...###.
+###T#####G'''
+)
+        a.spawn(h)
+
+        moved_successfully = a.move_hero('left')
+
+        self.assertFalse(moved_successfully, "got out of the map")
+
+
+    def test_move_hero_with_up_should_move_the_hero(self):
+        h = Hero(name="Bron", title="Dragonslayer", health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string(
+'''..##.....T
+.S##..###.
+#.###E###E
+#.E...###.
+###T#####G'''
+)
+        expected = (
+'''.H##.....T
+..##..###.
+#.###E###E
+#.E...###.
+###T#####G'''
+)
+        a.spawn(h)
+        a.move_hero('left')
+        a.move_hero('right')
+
+        a.move_hero('up')
+
+        self.assertEqual(expected, a.map)
+
+
+    def test_move_hero_with_up_next_to_the_wall_should_return_false(self):
+        h = Hero(name="Bron", title="Dragonslayer", health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string(
+'''S.##.....T
+..##..###.
+#.###E###E
+#.E...###.
+###T#####G'''
+)
+        a.spawn(h)
+
+        moved_successfully = a.move_hero('up')
+
+        self.assertFalse(moved_successfully, "got out of the map")
+
+
+    def test_move_hero_with_down_should_move_the_hero(self):
+        h = Hero(name="Bron", title="Dragonslayer", health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string(
+'''..##.....T
+.S##..###.
+#.###E###E
+#.E...###.
+###T#####G'''
+)
+        expected = (
+'''..##.....T
+.H##..###.
+#.###E###E
+#.E...###.
+###T#####G'''
+)
+        a.spawn(h)
+        a.move_hero('left')
+        a.move_hero('right')
+        a.move_hero('up')
+
+        a.move_hero('down')
+
+        self.assertEqual(expected, a.map)
+
+
+    def test_move_hero_with_down_next_to_the_wall_should_return_false(self):
+        h = Hero(name="Bron", title="Dragonslayer", health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string(
+'''..##.....T
+..##..###.
+#.###E###E
+#.ES..###.
+###.#####G'''
+)
+        a.spawn(h)
+        a.move_hero('down')
+
+        moved_successfully = a.move_hero('down')
+
+        self.assertFalse(moved_successfully, "got out of the map")
+
+
+    def test_move_onto_an_obstacle_returns_false_but_others_true(self):
+        h = Hero(name="Bron", title="Dragonslayer", health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string(
+'''..##.....T
+..##..###.
+#.###E###E
+#.ES..###.
+###.#####G'''
+)
+        a.spawn(h)
+
+        moved_successfully1 = a.move_hero('down')
+        moved_successfully2 = a.move_hero('right')
+        moved_successfully3 = a.move_hero('left')
+        moved_successfully4 = a.move_hero('up')
+        moved_successfully5 = a.move_hero('right')
+        moved_successfully6 = a.move_hero('right')
+        moved_successfully7 = a.move_hero('right')
+
+
+        self.assertTrue(moved_successfully1, "cannot move")
+        self.assertFalse(moved_successfully2, "got onto an obstacle")
+        self.assertFalse(moved_successfully3, "got onto an obstacle")
+        self.assertTrue(moved_successfully4, "cannot move")
+        self.assertTrue(moved_successfully5, "cannot move")
+        self.assertTrue(moved_successfully6, "cannot move")
+        self.assertFalse(moved_successfully7, "got onto an obstacle")
 
 
 if __name__ == '__main__':
