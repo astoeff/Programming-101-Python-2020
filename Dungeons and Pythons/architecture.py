@@ -8,7 +8,8 @@ class Hero(Playable):
 
 
 class Enemy(Playable):
-    pass
+    damage = random.randrange(100, 200)
+    equip_spell(random.choice('spells.txt'))
 
 #Yoan
 class Item:
@@ -29,3 +30,9 @@ class Dungeon:
 
 class Fight:
     pass
+
+spells.txt:
+    -------------------------------------------------
+    spell1 = Spell(name='magic of unicorn', damage=20)
+    -------------------------------------------------
+    spell2 = Spell(name='magic of unicorn', damage=24)
