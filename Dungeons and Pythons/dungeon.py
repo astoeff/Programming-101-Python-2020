@@ -1,7 +1,9 @@
 class Dungeon:
     def __init__(self, file):
+        self.list_map = [[]]
         self.map = self.to_string(file)
         self.validate_map()
+        self.to_list()
 
 
     @classmethod
@@ -38,3 +40,26 @@ class Dungeon:
             return True
         else:
             return False
+
+
+    # def move_hero(self, direction):
+    #     current_position = self.map.index('H')
+
+
+
+    def to_list(self):
+        i = 0
+        for symbol in self.map:
+            if symbol == '\n':
+                self.list_map.append([])
+                i += 1
+            else:
+                self.list_map[i].append(symbol)
+        # with open(file, 'r') as f:
+        #     i = 0
+        #     for line in f.readlines():
+        #         self.map.append([])
+        #         for symbol in line:
+        #             if symbol != '\n':
+        #                 self.map[i].append(symbol)
+        #         i += 1
