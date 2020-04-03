@@ -1,9 +1,17 @@
+from choose import (
+choose_random_spell_from_file,
+choose_random_weapon_from_file,
+choose_random_treasure_from_file
+)
+
+
 class Dungeon:
     def __init__(self, file):
         self.list_map = [[]]
         self.map = self.to_string(file=file)
         self.validate_map()
         self.to_list()
+        self.treasures_file = file.replace('.txt', '_treasures.txt')
 
 
     @classmethod
@@ -72,6 +80,9 @@ class Dungeon:
         try:
             if self.list_map[new_y][new_x] == '#':
                 return False
+            elif self.list_map[new_y][new_x] == 'T':
+                treasure = self.pick_treasure()
+                print("Found treasure!")
         except IndexError:
             return False
         else:
@@ -100,5 +111,5 @@ class Dungeon:
         #         i += 1
 
 
-    def pick_treasure(self):
-        return True
+    def pick_treasure(self, string=None):
+        return choose_random_treasure_from_file(self.treasures_file)

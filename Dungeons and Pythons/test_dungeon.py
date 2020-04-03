@@ -372,5 +372,21 @@ class TestMoveHero(unittest.TestCase):
         self.assertFalse(moved_successfully, "unvalid move direction")
 
 
+    def test_move_onto_a_treasure_returns_true(self):
+        h = Hero(name="Bron", title="Dragonslayer", health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string(
+'''..##....ST
+..##..###.
+#.###E###E
+#.E...###.
+###.#####G'''
+)
+        a.spawn(h)
+
+        moved_successfully = a.move_hero('right')
+
+        self.assertTrue(moved_successfully, "cannot move onto a treasure")
+
+
 if __name__ == '__main__':
     unittest.main()
