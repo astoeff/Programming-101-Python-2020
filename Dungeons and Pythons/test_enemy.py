@@ -6,25 +6,19 @@ from spell import Spell
 
 class TestEnemy(unittest.TestCase):
 	#__init__()
-	def test_with_given_correct_arguments_should_initialise_enemy(self):
-		health = 100
-		mana = 100
-		damage = 20
-
-		e = Enemy(health, mana, damage)
+	def test_with_given_no_arguments_should_initialise_enemy(self):
+		e = Enemy()
 
 		self.assertEqual(Enemy, type(e))
-		self.assertEqual(health, e.health)
-		self.assertEqual(mana, e.mana)
-		self.assertEqual(damage, e.damage)
+		self.assertTrue(hasattr(e, 'health'))
+		self.assertTrue(hasattr(e, 'mana'))
+		self.assertTrue(hasattr(e, 'damage'))
+		self.assertTrue(hasattr(e, 'spell'))
+		self.assertTrue(hasattr(e, 'weapon'))
 
 	#attack(by)
 	def test_with_given_enemy_and_invalid_by_as_argument_should_raise_exception(self):
-		health = 100
-		mana = 100
-		damage = 20
-
-		e = Enemy(health, mana, damage)
+		e = Enemy()
 		by = None
 
 		exc = None
@@ -36,82 +30,41 @@ class TestEnemy(unittest.TestCase):
 		self.assertIsNotNone(exc)
 		self.assertEqual(str(exc), 'Invalid item for attack given')
 
-	def test_with_given_enemy_with_no_weapon_and_weapon_as_argument_should_return_zero(self):
-		health = 100
-		mana = 100
-		damage = 20
-
-		e = Enemy(health, mana, damage)
+	def test_attack_by_weapon_with_given_enemy_should_return_correct_value(self):
+		e = Enemy()
 		by = PLAYER_ATTACK_BY_WEAPON_STRING
-			
+
 		result = e.attack(by=by)
-			
-		self.assertEqual(0, result)
 
-	def test_with_given_enemy_with_weapon_and_weapon_as_argument_should_return_damage_of_weapon(self):
-		health = 100
-		mana = 100
-		damage = 20
+		if e.weapon == None:
+			self.assertEqual(0, result)
+		else:
+			self.assertEqual(e.weapon.damage, result)
 
-		e = Enemy(health, mana, damage)
-		weapon = Weapon(name='Fireball', damage=30)	
-		e.equip(weapon)
-		by = PLAYER_ATTACK_BY_WEAPON_STRING
-			
-		result = e.attack(by=by)
-			
-		self.assertEqual(30, result)
-
-	def test_with_given_enemy_with_no_spell_and_spell_as_argument_should_return_zero(self):
-		health = 100
-		mana = 100
-		damage = 20
-
-		e = Enemy(health, mana, damage)
+	def test_attack_by_spell_with_given_enemy_should_return_correct_value(self):
+		e = Enemy()
 		by = PLAYER_ATTACK_BY_SPELL_STRING
+
+		enemy_mana_before_attack = e.mana
 			
 		result = e.attack(by=by)
-			
-		self.assertEqual(0, result)
 
-	def test_with_given_enemy_with_castable_spell_and_spell_as_argument_should_return_damage_of_spell(self):
-		health = 100
-		mana = 100
-		damage = 20
+		
+		if e.spell == None:		
+			self.assertEqual(0, result)
+		else:
+			if e.spell.mana_cost > enemy_mana_before_attack:
+				self.assertEqual(0, result)
+			else:
+				self.assertEqual(e.spell.damage, result)
 
-		e = Enemy(health, mana, damage)
-		spell = Spell(name='Fireball', damage=30, mana_cost=50, cast_range=2)
-		e.learn(spell)
-		by = PLAYER_ATTACK_BY_SPELL_STRING
-			
-		result = e.attack(by=by)
-			
-		self.assertEqual(30, result)
-
-	def test_with_given_enemy_with_non_castable_spell_and_spell_as_argument_should_return_zerol(self):
-		health = 100
-		mana = 20
-		damage = 20
-
-		e = Enemy(health, mana, damage)
-		spell = Spell(name='Fireball', damage=30, mana_cost=50, cast_range=2)
-		e.learn(spell)
-		by = PLAYER_ATTACK_BY_SPELL_STRING
-			
-		result = e.attack(by=by)
-			
-		self.assertEqual(0, result)
 
 	def test_with_given_enemy_with_no_item_for_attack_should_return_damage_of_enemy(self):
-		health = 100
-		mana = 100
-		damage = 30
-
-		e = Enemy(health, mana, damage)		
+		e = Enemy()		
 			
 		result = e.attack()
-			
-		self.assertEqual(damage, result)
+
+		self.assertEqual(e.damage, result)
 
 if __name__ == '__main__':
 	unittest.main()
