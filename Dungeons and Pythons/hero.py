@@ -22,3 +22,13 @@ class Hero(Playable):
 		if result_form_attack != None:
 			return result_form_attack
 		return 0
+
+	def print_hero(self):
+		print('Name: ', self.name)
+		print('Title: ', self.title)
+		print('Known as: ', self.known_as())
+		print('Health: ', self.health)
+		print('Mana: ', self.mana)
+		print('Mana regeneration rate: ', self.mana_regeneration_rate)
+		print('Weapon: ', self.weapon)
+		print('Spell: ', self.spell)
