@@ -1,7 +1,5 @@
 from constants import PLAYER_MAX_MANA_AND_HEALTH, PLAYER_MIN_MANA_AND_HEALTH, PLAYER_ATTACK_BY_WEAPON_STRING, PLAYER_ATTACK_BY_SPELL_STRING 
-from weapon import Weapon
-from spell import Spell
-
+from treasure import Spell, Weapon
 
 def regulate_player_attribute(attribute):
 	if attribute < PLAYER_MIN_MANA_AND_HEALTH:

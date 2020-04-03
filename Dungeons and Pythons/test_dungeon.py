@@ -131,6 +131,20 @@ class TestDungeon(unittest.TestCase):
         self.assertTrue(spawned_successfully3, "cannot spawn")
 
 
+    def test_pick_treasure(self):
+        a = Dungeon.from_string(
+'''S.##....ST
+#T##..###.
+#.###E###E
+#.E..S###.
+###T#####G'''
+)
+
+        treasure = a.pick_treasure()
+
+        self.assertIsNotNone(treasure)
+
+
 
 
 class TestMoveHero(unittest.TestCase):
@@ -340,6 +354,22 @@ class TestMoveHero(unittest.TestCase):
         self.assertTrue(moved_successfully5, "cannot move")
         self.assertTrue(moved_successfully6, "cannot move")
         self.assertFalse(moved_successfully7, "got onto an obstacle")
+
+
+    def test_move_hero_with_unvalid_direction_returns_false(self):
+        h = Hero(name="Bron", title="Dragonslayer", health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string(
+'''..##.....T
+..##..###.
+#.###E###E
+#.ES..###.
+###.#####G'''
+)
+        a.spawn(h)
+
+        moved_successfully = a.move_hero('upleft')
+
+        self.assertFalse(moved_successfully, "unvalid move direction")
 
 
 if __name__ == '__main__':

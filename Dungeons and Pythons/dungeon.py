@@ -66,6 +66,8 @@ class Dungeon:
                 return False
         elif direction == 'down':
             new_y = current_y + 1
+        else:
+            return False
 
         try:
             if self.list_map[new_y][new_x] == '#':
@@ -96,3 +98,7 @@ class Dungeon:
         #             if symbol != '\n':
         #                 self.map[i].append(symbol)
         #         i += 1
+
+
+    def pick_treasure(self):
+        return True

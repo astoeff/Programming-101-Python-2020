@@ -1,7 +1,6 @@
 import unittest
 from playable import Playable
-from weapon import Weapon
-from spell import Spell
+from treasure import Spell, Weapon
 from constants import PLAYER_ATTACK_BY_WEAPON_STRING, PLAYER_ATTACK_BY_SPELL_STRING
 
 class Player(Playable):
