@@ -1,6 +1,24 @@
 import unittest
 
-from spell import Spell
+from treasure import Treasure, Weapon, Spell
+
+class TestTreasure(unittest.TestCase):
+    def test_init_treasure(self):
+        t = Treasure.get_random_treasure()
+
+        self.assertIsInstance(t, Treasure)
+
+
+class TestWeapon(unittest.TestCase):
+    def test_init_weapon(self):
+        name = "The Axe of Destiny"
+        damage = 20
+
+        w = Weapon(name=name, damage=damage)
+
+        self.assertEqual(w.name, name)
+        self.assertEqual(w.damage, damage)
+
 
 class TestSpell(unittest.TestCase):
     def test_init_spell(self):

@@ -1,7 +1,6 @@
 import random
 from playable import Playable
-from spell import Spell
-from weapon import Weapon
+from treasure import Spell, Weapon
 
 def choose_random_spell_from_file():
         try:
