@@ -1,8 +1,7 @@
 import unittest
 from constants import PLAYER_ATTACK_BY_WEAPON_STRING, PLAYER_ATTACK_BY_SPELL_STRING
 from hero import Hero
-from weapon import Weapon
-from spell import Spell
+from treasure import Spell, Weapon
 
 
 class TestHero(unittest.TestCase):
