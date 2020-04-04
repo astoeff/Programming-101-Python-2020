@@ -19,21 +19,25 @@ class Treasure:
 
 class Spell(Treasure):
     # name, damage, mana_cost, cast_range
-    pass
+    def __str__(self):
+        return 'Spell: ' + self.name + ' damage: ' + str(self.damage) + ' cost: ' + str(self.mana_cost) + ' range: ' + str(self.cast_range)
 
 
 class Weapon(Treasure):
     # name, damage
-    pass
+    def __str__(self):
+        return 'Weapon: ' + self.name + ' damage: ' + str(self.damage)
 
 
 class HealthPotion(Treasure):
     # name, healing
-    pass
+    def __str__(self):
+        return 'HealthPotion: ' + self.name + ' healing: ' + str(self.healing)
 
 
 class ManaPotion(Treasure):
-    pass
+    def __str__(self):
+        return 'ManaPotion: ' + self.name + ' mana: ' + str(self.mana_regen)
 
 
 # treasures = [

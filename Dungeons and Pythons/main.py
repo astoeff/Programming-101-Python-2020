@@ -3,6 +3,7 @@ import subprocess
 from time import sleep
 from hero import Hero
 from help_library import get_character
+from treasure import Treasure
 
 
 def print_intro():
@@ -111,22 +112,64 @@ def convert_symbol_pressed_to_direction(symbol_pressed):
         return 'down'
     elif symbol_pressed == 'a':
         return 'left'
-    else:
+    elif symbol_pressed == 'd':
         return 'right'
 
 
-def validate_move_from_console(dungeon):
+def read_direction_from_console():
     list_of_symbols = ['w', 's', 'a', 'd']
-    message = 'Press w,s,a or d to move ...'
+    message = 'Press w,s,a or d to select direction'
+    symbol_pressed = wait_until_symbol_from_list_of_symbols_is_read_from_console(list_of_symbols, message)
+    return convert_symbol_pressed_to_direction(symbol_pressed)
+
+
+def attack_from_distance(dungeon):
+    print('Do you want to attack from distance by spell before moving?')
+    symbols = ['y', 'n']
+    message = 'y for YES, n for NO'
+    answer = wait_until_symbol_from_list_of_symbols_is_read_from_console(symbols, message)
+    if answer == 'y':
+        print('\nChose direction for spell: ')
+        direction = read_direction_from_console()
+        print('Attack ', direction)
+        print()
+        #dungeon.hero_attack(direction)
+    return answer
+
+
+def execute_move(dungeon):
+    # attack_from_distance(dungeon)
+    print('Press w,s,a or d to move ...\n')
     correct = False
     while correct is False:
-        symbol_pressed = wait_until_symbol_from_list_of_symbols_is_read_from_console(list_of_symbols, message)
-        direction = convert_symbol_pressed_to_direction(symbol_pressed)
-        if dungeon.move_hero(direction):
+        direction = read_direction_from_console()
+        result = dungeon.move_hero(direction)
+        if result is True:
             print('You moved your hero ', direction)
             correct = True
-        else:
+        elif result == False:
             print('You cannot go {dir}, try different move\n'.format(dir=direction))
+        else:
+            print(result)
+            correct = True
+
+    sleep(2)
+
+
+def show_new_attack_screen(dungeon, hero):
+    new_screen()
+    print_hero_current_state(hero)
+    print_navigation_legend()
+    print_map_with_legend(dungeon)
+
+
+def show_attack_screens_until_no_for_answer(dungeon, hero):
+    while True:
+        show_new_attack_screen(dungeon, hero)
+        result = attack_from_distance(dungeon)
+        if result == 'n':
+            break
+        sleep(2)
 
 
 def show_new_move_screen(dungeon, hero):
@@ -134,10 +177,12 @@ def show_new_move_screen(dungeon, hero):
     print_hero_current_state(hero)
     print_navigation_legend()
     print_map_with_legend(dungeon)
-    validate_move_from_console(dungeon)
+    execute_move(dungeon)
+
 
 def moving_process(dungeon, hero):
     while True:
+        show_attack_screens_until_no_for_answer(dungeon, hero)
         show_new_move_screen(dungeon, hero)
 
 
