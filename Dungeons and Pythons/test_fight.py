@@ -52,9 +52,9 @@ class TestFight(unittest.TestCase):
         h.equip(Weapon(name="The Axe of Destiny", damage=20))
         e = Enemy()
 
-        f = Fight(h, e)
+        Fight(h, e)
 
-        self.assertEqual(f.attack, PLAYER_ATTACK_BY_WEAPON_STRING)
+        self.assertEqual(h.attacking, PLAYER_ATTACK_BY_WEAPON_STRING)
 
     def test_with_spell_should_attack_by_spell(self):
         h = Hero(name="Bron", title="Dragonslayer",
@@ -62,9 +62,9 @@ class TestFight(unittest.TestCase):
         h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
         e = Enemy()
 
-        f = Fight(h, e)
+        Fight(h, e)
 
-        self.assertEqual(f.attack, PLAYER_ATTACK_BY_SPELL_STRING)
+        self.assertEqual(h.attacking, PLAYER_ATTACK_BY_SPELL_STRING)
 
     def test_with_spell_and_weapon_should_attack_by_higher_damage(self):
         h = Hero(name="Bron", title="Dragonslayer",
@@ -73,9 +73,9 @@ class TestFight(unittest.TestCase):
         h.equip(Weapon(name="The Axe of Destiny", damage=20))
         e = Enemy()
 
-        f = Fight(h, e)
+        Fight(h, e)
 
-        self.assertEqual(f.attack, PLAYER_ATTACK_BY_SPELL_STRING)
+        self.assertEqual(h.attacking, PLAYER_ATTACK_BY_SPELL_STRING)
 
     def test_with_weapon_and_spell_should_attack_by_higher_damage(self):
         h = Hero(name="Bron", title="Dragonslayer",
@@ -84,9 +84,9 @@ class TestFight(unittest.TestCase):
         h.equip(Weapon(name="The Axe of Destiny", damage=30))
         e = Enemy()
 
-        f = Fight(h, e)
+        Fight(h, e)
 
-        self.assertEqual(f.attack, PLAYER_ATTACK_BY_WEAPON_STRING)
+        self.assertEqual(h.attacking, PLAYER_ATTACK_BY_WEAPON_STRING)
 
     def test_with_equal_spell_and_weapon_damage_should_attack_by_spell(self):
         h = Hero(name="Bron", title="Dragonslayer",
@@ -95,9 +95,9 @@ class TestFight(unittest.TestCase):
         h.equip(Weapon(name="The Axe of Destiny", damage=30))
         e = Enemy()
 
-        f = Fight(h, e)
+        Fight(h, e)
 
-        self.assertEqual(f.attack, PLAYER_ATTACK_BY_SPELL_STRING)
+        self.assertEqual(h.attacking, PLAYER_ATTACK_BY_SPELL_STRING)
 
     def test_with_spell_and_weapon_but_no_mana_should_attack_by_weapon(self):
         h = Hero(name="Bron", title="Dragonslayer",
@@ -107,9 +107,9 @@ class TestFight(unittest.TestCase):
         e = Enemy()
         h.mana = 0
 
-        f = Fight(h, e)
+        Fight(h, e)
 
-        self.assertEqual(f.attack, PLAYER_ATTACK_BY_WEAPON_STRING)
+        self.assertEqual(h.attacking, PLAYER_ATTACK_BY_WEAPON_STRING)
 
     def test_with_spell_and_weapon_with_distance_should_attack_by_spell(self):
         h = Hero(name="Bron", title="Dragonslayer",
@@ -119,9 +119,9 @@ class TestFight(unittest.TestCase):
         e = Enemy()
         h.mana = 0
 
-        f = Fight(h, e, distance=2)
+        Fight(h, e, distance=2)
 
-        self.assertEqual(f.attack, PLAYER_ATTACK_BY_SPELL_STRING)
+        self.assertEqual(h.attacking, PLAYER_ATTACK_BY_SPELL_STRING)
 
 
 if __name__ == '__main__':

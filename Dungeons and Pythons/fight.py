@@ -24,7 +24,6 @@ class Fight:
         assert isinstance(hero, Playable)
         assert isinstance(enemy, Playable)
 
-
         self.hero = hero
         self.enemy = enemy
         self.distance = distance
@@ -51,29 +50,29 @@ Hero is dead''')
     def __repr__(self):
         return self.happened
 
-    def set_attack(self):
+    def set_attack(self, playable):
         if not self.distance:
-            if self.hero.spell:
-                if self.hero.weapon:
-                    if self.hero.can_cast():
-                        if self.hero.spell.damage >= self.hero.weapon.damage:
-                            self.attack = PLAYER_ATTACK_BY_SPELL_STRING
+            if playable.spell:
+                if playable.weapon:
+                    if playable.can_cast():
+                        if playable.spell.damage >= playable.weapon.damage:
+                            playable.attacking = PLAYER_ATTACK_BY_SPELL_STRING
                         else:
-                            self.attack = PLAYER_ATTACK_BY_WEAPON_STRING
+                            playable.attacking = PLAYER_ATTACK_BY_WEAPON_STRING
                     else:
-                        self.attack = PLAYER_ATTACK_BY_WEAPON_STRING
-                        if self.hero.enough_mana:
-                            self.hero.enough_mana = False
+                        playable.attacking = PLAYER_ATTACK_BY_WEAPON_STRING
+                        if playable.enough_mana:
+                            playable.enough_mana = False
                             self.happened += (f'''
 Hero does not have mana for another {self.hero.spell}.''')
                 else:
-                    self.attack = PLAYER_ATTACK_BY_SPELL_STRING
+                    playable.attacking = PLAYER_ATTACK_BY_SPELL_STRING
             else:
-                self.attack = PLAYER_ATTACK_BY_WEAPON_STRING
+                playable.attacking = PLAYER_ATTACK_BY_WEAPON_STRING
         else:
-            self.attack = PLAYER_ATTACK_BY_SPELL_STRING
+            playable.attacking = PLAYER_ATTACK_BY_SPELL_STRING
 
-        if self.attack == PLAYER_ATTACK_BY_WEAPON_STRING:
+        if playable.attacking == PLAYER_ATTACK_BY_WEAPON_STRING:
             self.happened += (f'''
 Hero hits with {self.hero.weapon})''')
         else:
@@ -81,26 +80,32 @@ Hero hits with {self.hero.weapon})''')
 Hero casts a {self.hero.spell.name}, hits enemy''')
 
     def hero_on_turn(self):
-        self.set_attack()
+        self.set_attack(self.hero)
 
-        damage = self.hero.attack(by=self.attack)
+        damage = self.hero.attack(by=self.hero.attacking)
         self.enemy.take_damage(damage)
         self.happened += f''' for {damage} dmg.\
          Enemy health is {self.enemy.health}'''
 
     def enemy_on_turn(self):
         if self.distance:
-            if self.enemy.can_cast():
-                self.enemy.enough_mana = True
-                attack = PLAYER_ATTACK_BY_SPELL_STRING
-            else:
-                if self.enemy.enough_mana:
-                    self.enemy.enough_mana = False
-                    self.happened += (f'''
+            if self.enemy.spell:
+                if self.enemy.can_cast():
+                    self.enemy.enough_mana = True
+                    attack = PLAYER_ATTACK_BY_SPELL_STRING
+                else:
+                    if self.enemy.enough_mana:
+                        self.enemy.enough_mana = False
+                        self.happened += (f'''
 Enemy does not have mana for another {self.hero.spell}.''')
-                self.distance -= 1
-                self.happened += (f'''
+                    self.move_enemy()
+            else:
+                self.move_enemy()
+        elif self.enemy.weapon:
+            pass
+
+    def move_enemy(self):
+        self.distance -= 1
+        self.happened += (f'''
 Enemy moves one square to the {self.direction} in order to get to the hero.\
  This is his move.''')
-        else:
-            pass
