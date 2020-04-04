@@ -11,6 +11,9 @@ class Hero(Playable):
         self.weapon = None
         self.spell = None
 
+    def __repr__(self):
+        return f"Hero(health={self.health}, mana={self.mana})"
+
     def known_as(self):
         return self.name + ' the ' + self.title
 

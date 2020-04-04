@@ -53,8 +53,6 @@ class Playable:
             return False
         if self.spell.mana_cost > self.mana:
             return False
-        self.mana -= self.spell.mana_cost
-        self.mana = regulate_player_attribute(attribute=self.mana)
         return True
 
     def attack(self, **kwargs):
@@ -66,6 +64,8 @@ class Playable:
                     return 0
             elif kwargs['by'] == PLAYER_ATTACK_BY_SPELL_STRING:
                 if self.can_cast():
+                    self.mana -= self.spell.mana_cost
+                    self.mana = regulate_player_attribute(attribute=self.mana)
                     return self.spell.damage
                 else:
                     return 0

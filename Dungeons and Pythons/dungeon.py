@@ -118,7 +118,9 @@ class Dungeon:
         if 'E' in self.map:
             x, y = self.get_current_position()
 
+            self.distance = 0
             while True:
+                self.distance += 1
                 if direction == 'right':
                     x += 1
                 elif direction == 'left':
@@ -146,7 +148,8 @@ class Dungeon:
             if not self.enemy_in_casting_range(direction):
                 return f"Nothing in casting range {self.hero.spell.cast_range}"
             else:
-                return Fight(self.hero, Enemy())
+                return Fight(self.hero, Enemy(),
+                             distance=self.distance, direction=direction)
         elif by == PLAYER_ATTACK_BY_WEAPON_STRING:
             return f"Weapon range is 0!"
         else:
