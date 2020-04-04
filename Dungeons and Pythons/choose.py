@@ -1,6 +1,6 @@
 import random
 
-from treasure import Spell, Weapon, HealthPotion, ManaPotion, Treasure
+from treasure import Spell, Weapon, HealthPotion, ManaPotion
 
 
 def choose_random_spell_from_file():
@@ -29,6 +29,7 @@ def choose_random_weapon_from_file():
     except Exception as e:
        print(e)
 
+
 def choose_random_treasure_from_file(file=None):
     if not file:
         file = "test_treasures.txt"
@@ -36,17 +37,19 @@ def choose_random_treasure_from_file(file=None):
         with open(file, 'r') as f:
             treasures_in_file = f.read().splitlines()
             treasure_args_string = random.choice(treasures_in_file)
-            if treasure_args_string == 'None':                   
+            if treasure_args_string == 'None':
                 return None
             args = treasure_args_string.split(',')
             if args[0] == 'Spell':
-                treasure = Spell(name=args[1], damage=int(args[2]), mana_cost=int(args[3]), cast_range=int(args[4]))
+                treasure = Spell(name=args[1], damage=int(args[2]),
+                                 mana_cost=int(args[3]),
+                                 cast_range=int(args[4]))
             elif args[0] == 'Weapon':
                 treasure = Weapon(name=args[1], damage=int(args[2]))
             elif args[0] == 'HealthPotion':
                 treasure = HealthPotion(name=args[1], healing=args[2])
             elif args[0] == 'ManaPotion':
-                treasure = HealthPotion(name=args[1], mana_regen=args[2])
+                treasure = ManaPotion(name=args[1], mana_regen=args[2])
             return treasure
     except Exception as e:
-       print(e)
+        print(e)

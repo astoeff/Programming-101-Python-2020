@@ -1,4 +1,4 @@
-#Antony
+# Antony
 class Playable:
     pass
 
@@ -11,7 +11,8 @@ class Enemy(Playable):
     damage = random.randrange(100, 200)
     equip_spell(random.choice('spells.txt'))
 
-#Yoan
+
+# Yoan
 class Item:
     pass
 
@@ -23,13 +24,15 @@ class Spell(Item):
 class Weapon(Item):
     pass
 
-#to be continued...
+
+# to be continued...
 class Dungeon:
     pass
 
 
 class Fight:
     pass
+
 
 spells.txt:
     -------------------------------------------------
