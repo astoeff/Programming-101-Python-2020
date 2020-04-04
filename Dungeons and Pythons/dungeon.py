@@ -78,7 +78,11 @@ class Dungeon:
                 self.map = self.to_string(list=self.list_map)
                 return True
             elif self.list_map[new_y][new_x] == 'T':
-                return self.pick_treasure()
+                treasure = self.pick_treasure()
+                self.list_map[current_y][current_x] = '.'
+                self.list_map[new_y][new_x] = 'H'
+                self.map = self.to_string(list=self.list_map)
+                return treasure
             else:
                 return self.list_map[new_y][new_x]
         except IndexError:
@@ -102,7 +106,9 @@ class Dungeon:
         #         i += 1
 
     def pick_treasure(self, string=None):
-        return choose_random_treasure_from_file(self.treasures_file)
+        treasure = choose_random_treasure_from_file(self.treasures_file)
+        self.hero.set_treasure(treasure)
+        return treasure
 
     def enemy_in_casting_range(self):
         if 'E' in self.map:
@@ -120,8 +126,8 @@ class Dungeon:
         if by == PLAYER_ATTACK_BY_SPELL_STRING:
             print(self.hero.attack(by=by))
             if not self.hero.attack(by=by):
-                return f"Nothing in casting range {self.hero.spell.cast_range}"
+                return "Nothing in casting range {x}".format(x=self.hero.spell.cast_range)
             else:
-                print(f"Not in casting range {self.hero.spell.cast_range}")
+                print("Nothing in casting range {x}".format(x=self.hero.spell.cast_range))
         else:
-            print("WTFMAIKATI DA EBA")
+            print("Error")

@@ -77,8 +77,8 @@ def print_hero_current_state(hero):
     info.append(hero.known_as())
     info.append('HEALTH = ' + str(hero.health))
     info.append('MANA = ' + str(hero.mana))
-    info.append('WEAPON = ' + str(hero.weapon))
-    info.append('SPELL = ' + str(hero.spell))
+    info.append('WEAPON = ' + str(hero.weapon)[9:])
+    info.append('SPELL = ' + str(hero.spell)[7:])
     max_len = max([len(i) for i in info])
     for i in range(max_len + 2):
         upper_border += '*'
@@ -134,11 +134,11 @@ def attack_from_distance(dungeon):
         print('Attack ', direction)
         print()
         #dungeon.hero_attack(direction)
+        #if attack ok - start fight
     return answer
 
 
 def execute_move(dungeon):
-    # attack_from_distance(dungeon)
     print('Press w,s,a or d to move ...\n')
     correct = False
     while correct is False:
@@ -149,11 +149,15 @@ def execute_move(dungeon):
             correct = True
         elif result == False:
             print('You cannot go {dir}, try different move\n'.format(dir=direction))
+        elif result == 'E':
+            print('Your way is blocked by an enemy, you need to fight him in order to continue ...')
+            #start a fight
+            correct = True
         else:
+            print('Congratulations! You found a treasure.')
             print(result)
             correct = True
-
-    sleep(2)
+    sleep(1)
 
 
 def show_new_attack_screen(dungeon, hero):
@@ -198,7 +202,6 @@ def main():
     symbol = 'c'
     message = 'Press c for continue ...'
     wait_until_symbol_from_list_of_symbols_is_read_from_console([symbol], message)
-    # sleep(1)
     dungeon.spawn(hero)
     moving_process(dungeon, hero)
     
