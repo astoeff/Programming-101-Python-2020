@@ -3,7 +3,6 @@ from constants import PLAYER_ATTACK_BY_WEAPON_STRING, PLAYER_ATTACK_BY_SPELL_STR
 from hero import Hero
 from treasure import Spell, Weapon
 
-
 class TestHero(unittest.TestCase):
 	#__init__()
 	def test_with_given_correct_arguments_should_initialise_hero(self):
