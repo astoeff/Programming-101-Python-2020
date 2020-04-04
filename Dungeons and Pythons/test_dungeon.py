@@ -27,7 +27,7 @@ class TestDungeon(unittest.TestCase):
 ###T#####G''')
 
         with self.assertRaises(AssertionError):
-            a = Dungeon.from_string(string)
+            Dungeon.from_string(string)
 
     def test_to_list(self):
         h = Hero(name="Bron", title="Dragonslayer",
@@ -521,20 +521,36 @@ class TestEnemyInCastingRange(unittest.TestCase):
         result = a.enemy_in_casting_range('down')
 
         self.assertTrue(result, "cannot attack down")
-#     def test_by_spell_with_no_enemy_in_casting_range(self):
-#         h = Hero(name="Bron", title="Dragonslayer",
-#                  health=100, mana=100, mana_regeneration_rate=2)
-#         h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
-#         a = Dungeon.from_string('''..##.....T
-# .S##..###.
-# #.###E###E
-# #.E...###.
-# ###.#####G''')
-#         a.spawn(h)
 
-#         attack = a.hero_attack(by=PLAYER_ATTACK_BY_SPELL_STRING)
+    def test_with_unvalid_direction_returns_false(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
+        a = Dungeon.from_string('''..##.....T
+..##..###.
+#.S.E###E.
+#.E...###.
+##..#####G''')
+        a.spawn(h)
 
-#         self.assertEqual(attack, "Nothing in casting range 2")
+        result = a.enemy_in_casting_range('downleft')
+
+        self.assertFalse(result, "unvalid direction")
+
+    def test_by_spell_with_no_enemy_in_casting_range(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
+        a = Dungeon.from_string('''..##.....T
+.S##..###.
+#.###E###E
+#.E...###.
+###.#####G''')
+        a.spawn(h)
+
+        attack = a.hero_attack(by=PLAYER_ATTACK_BY_SPELL_STRING, direction='down')
+
+        self.assertEqual(attack, "Nothing in casting range 2")
 
 
 if __name__ == '__main__':

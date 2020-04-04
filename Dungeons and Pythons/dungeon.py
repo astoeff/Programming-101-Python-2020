@@ -1,5 +1,6 @@
 from choose import choose_random_treasure_from_file
-from constants import PLAYER_ATTACK_BY_SPELL_STRING
+from constants import (PLAYER_ATTACK_BY_SPELL_STRING,
+                       PLAYER_ATTACK_BY_WEAPON_STRING)
 
 
 class Dungeon:
@@ -142,9 +143,11 @@ class Dungeon:
 
     def hero_attack(self, by, direction):
         if by == PLAYER_ATTACK_BY_SPELL_STRING:
-            if not self.hero.attack(by=by):
+            if not self.enemy_in_casting_range(direction):
                 return f"Nothing in casting range {self.hero.spell.cast_range}"
             else:
-                print(f"Not in casting range {self.hero.spell.cast_range}")
+                return Fight(self.hero, Enemy())
+        elif by == PLAYER_ATTACK_BY_WEAPON_STRING:
+            return f"Weapon range is 0!"
         else:
-            print("WTF")
+            return f"Cannot attack by {by}"
