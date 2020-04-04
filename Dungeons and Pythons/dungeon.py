@@ -1,8 +1,5 @@
-from choose import (
-choose_random_spell_from_file,
-choose_random_weapon_from_file,
-choose_random_treasure_from_file
-)
+from choose import choose_random_treasure_from_file
+from constants import PLAYER_ATTACK_BY_SPELL_STRING
 
 
 class Dungeon:
@@ -13,13 +10,11 @@ class Dungeon:
         self.to_list()
         self.treasures_file = file.replace('.txt', '_treasures.txt')
 
-
     @classmethod
     def from_string(cls, string):
         with open("test.txt", 'w') as f:
             f.write(string)
         return cls(file="test.txt")
-
 
     def to_string(self, file=None, list=None):
         if file:
@@ -30,7 +25,6 @@ class Dungeon:
         else:
             raise ValueError
 
-
     def validate_map(self):
         assert 'S' in self.map, "No starting point"
 
@@ -40,20 +34,18 @@ class Dungeon:
                 gates += 1
         assert gates == 1, "Number of gates != 1"
 
-
     def print_map(self):
         print(self.map)
-
 
     def spawn(self, hero):
         if 'H' in self.map:
             return False
         if 'S' in self.map:
+            self.hero = hero
             self. map = self.map.replace('S', 'H', 1)
             return True
         else:
             return False
-
 
     def move_hero(self, direction):
         current_position = self.map.replace('\n', '').index('H')
@@ -80,18 +72,17 @@ class Dungeon:
         try:
             if self.list_map[new_y][new_x] == '#':
                 return False
+            elif self.list_map[new_y][new_x] == '.':
+                self.list_map[current_y][current_x] = '.'
+                self.list_map[new_y][new_x] = 'H'
+                self.map = self.to_string(list=self.list_map)
+                return True
             elif self.list_map[new_y][new_x] == 'T':
-                treasure = self.pick_treasure()
-                print("Found treasure!")
+                return self.pick_treasure()
+            else:
+                return self.list_map[new_y][new_x]
         except IndexError:
             return False
-        else:
-            self.list_map[current_y][current_x] = '.'
-            self.list_map[new_y][new_x] = 'H'
-            self.map = self.to_string(list=self.list_map)
-            return True
-
-
 
     def to_list(self):
         i = 0
@@ -110,6 +101,27 @@ class Dungeon:
         #                 self.map[i].append(symbol)
         #         i += 1
 
-
     def pick_treasure(self, string=None):
         return choose_random_treasure_from_file(self.treasures_file)
+
+    def enemy_in_casting_range(self):
+        if 'E' in self.map:
+            self.to_list()
+
+            current_position = self.map.replace('\n', '').index('H')
+            current_x = current_position % len(self.list_map[0])
+            current_y = current_position // len(self.list_map[0])
+            new_x = current_x
+            new_y = current_y
+        else:
+            return False
+
+    def hero_attack(self, by):
+        if by == PLAYER_ATTACK_BY_SPELL_STRING:
+            print(self.hero.attack(by=by))
+            if not self.hero.attack(by=by):
+                return f"Nothing in casting range {self.hero.spell.cast_range}"
+            else:
+                print(f"Not in casting range {self.hero.spell.cast_range}")
+        else:
+            print("WTFMAIKATI DA EBA")
