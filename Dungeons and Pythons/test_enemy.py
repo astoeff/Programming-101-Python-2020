@@ -1,4 +1,6 @@
 import unittest
+
+from choose import choose_random_spell_from_file, choose_random_weapon_from_file
 from constants import PLAYER_ATTACK_BY_WEAPON_STRING, PLAYER_ATTACK_BY_SPELL_STRING
 from enemy import Enemy
 from treasure import Spell, Weapon

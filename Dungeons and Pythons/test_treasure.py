@@ -2,11 +2,11 @@ import unittest
 
 from treasure import Treasure, Weapon, Spell
 
-class TestTreasure(unittest.TestCase):
-    def test_init_treasure(self):
-        t = Treasure.get_random_treasure()
+# class TestTreasure(unittest.TestCase):
+#     def test_init_treasure(self):
+#         t = Treasure.get_random_treasure()
 
-        self.assertIsInstance(t, Treasure)
+#         self.assertIsInstance(t, Treasure)
 
 
 class TestWeapon(unittest.TestCase):
