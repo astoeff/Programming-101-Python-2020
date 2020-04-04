@@ -1,4 +1,4 @@
-The potion of Undying
-The potion of Unexhausting
-The potion of Unexhausting
-The potion of Unexhausting
+"The potion of Undying", 50
+"The potion of Unexhausting", 50
+"The potion of Unexhausting", 50
+"The potion of Unexhausting", 50
