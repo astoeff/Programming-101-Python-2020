@@ -81,6 +81,10 @@ Hero has nothing to do.'''
         elif self.hero.can_cast():
             self.hero.attacking = PLAYER_ATTACK_BY_SPELL_STRING
         else:
+            if self.hero.spell and self.hero.enough_mana:
+                    self.hero.enough_mana = False
+                    self.happened += (f'''
+Hero does not have mana for another {self.hero.spell.name}.''')
             self.move_hero()
             self.hero.attacking = None
 
@@ -97,13 +101,17 @@ Hero casts a {self.hero.spell.name}, hits enemy''')
     def set_enemy_attack(self):
         if not self.distance:
             if self.enemy.can_cast():
-                if self.enemy.weapon:
-                    if self.enemy.spell.damage >= self.enemy.weapon.damage:
-                        self.enemy.attacking = PLAYER_ATTACK_BY_SPELL_STRING
+                if self.enemy.spell.cast_range >= self.distance:
+                    if self.enemy.weapon:
+                        if self.enemy.spell.damage >= self.enemy.weapon.damage:
+                            self.enemy.attacking = PLAYER_ATTACK_BY_SPELL_STRING
+                        else:
+                            self.enemy.attacking = PLAYER_ATTACK_BY_WEAPON_STRING
                     else:
-                        self.enemy.attacking = PLAYER_ATTACK_BY_WEAPON_STRING
+                        self.enemy.attacking = PLAYER_ATTACK_BY_SPELL_STRING
                 else:
-                    self.enemy.attacking = PLAYER_ATTACK_BY_SPELL_STRING
+                    self.move_enemy()
+                    self.enemy.attacking = None
             else:
                 self.enemy.attacking = 0
                 if self.enemy.spell and self.enemy.enough_mana:
@@ -116,8 +124,16 @@ Enemy does not have mana for another {self.enemy.spell.name}.''')
                     self.happened += (f'''
 Enemy hits hero''')
         elif self.enemy.can_cast():
-            self.enemy.attacking = PLAYER_ATTACK_BY_SPELL_STRING
+            if self.enemy.spell.cast_range >= self.distance:
+                self.enemy.attacking = PLAYER_ATTACK_BY_SPELL_STRING
+            else:
+                self.move_enemy()
+                self.enemy.attacking = None
         else:
+            if self.enemy.spell and self.enemy.enough_mana:
+                        self.enemy.enough_mana = False
+                        self.happened += (f'''
+Enemy does not have mana for another {self.enemy.spell.name}.''')
             self.move_enemy()
             self.enemy.attacking = None
 
@@ -157,13 +173,16 @@ Enemy casts a {self.enemy.spell.name}, hits hero''')
         if self.hero.weapon:
             self.distance -= 1
             self.happened += (f'''
-Hero moves one square to the {self.direction} in\
+Hero moves one square {self.direction} in\
  order to get to the enemy. This is his move.''')
+        else:
+            self.happened += f'''
+Hero has nothing to do'''
 
     def move_enemy(self):
         self.distance -= 1
         self.happened += (f'''
-Enemy moves one square to the {self.opposite_direction} in\
+Enemy moves one square {self.opposite_direction} in\
  order to get to the hero. This is his move.''')
 
 
@@ -171,8 +190,8 @@ if __name__ == '__main__':
     h = Hero(name="Bron", title="Dragonslayer",
              health=100, mana=100, mana_regeneration_rate=2)
     h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
-    h.equip(Weapon(name="The Axe of Destiny", damage=20))
+    # h.equip(Weapon(name="The Axe of Destiny", damage=20))
     e = Enemy()
 
     # print(Fight(h, e))
-    print(Fight(h, e, distance=2, direction='right'))
+    print(Fight(h, e, distance=2, direction='down'))
