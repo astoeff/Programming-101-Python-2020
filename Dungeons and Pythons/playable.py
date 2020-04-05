@@ -49,7 +49,7 @@ class Playable:
         self.spell = spell
 
     def can_cast(self):
-        if self.spell == None:
+        if self.spell is None:
             return False
         if self.spell.mana_cost > self.mana:
             return False
