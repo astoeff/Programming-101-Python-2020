@@ -12,10 +12,16 @@ def print_intro():
     'You are put in a magic dungeon with TREASURES (T) ' \
     'and your task is to make through the exit (G), but be carefull!\n' \
     'There are ENEMIES (E) that you need to fight and obstacles (#).\n' \
-    'To make it easier for you there are checkpoints (C) in the dungeon.\n' \
+    'You can attack your enemies from a distance by spell but only if the range of the spell allows it.\n'\
+    'To make it easier for you, there are checkpoints (C) in the dungeon.\n' \
+    'Your hero respawns on the latest checkpoint.\n'\
+    'If you are dead and have not go through any checkpoints this life, you lose the game!\n'\
     'Good luck!\n'
     print(intro)
 
+def print_dungeon_map(dungeon):
+    print('This is your map:')
+    print(dungeon.map)
 
 def print_legend():
     print('LEGEND:')
@@ -23,18 +29,11 @@ def print_legend():
     print('G - exit of the dungeon         ' + 'T - treasure')
     print('# - obstacle                    ' + 'E - enemy')
 
-
-def print_dungeon_map(dungeon):
-    print('This is your map:')
-    print(dungeon.map)
-
-
 def print_map_with_legend(dungeon):
     print_dungeon_map(dungeon)
     print()
     print_legend()
     print('\n')
-
 
 def new_screen():
     bashCommand = "clear"
@@ -59,6 +58,27 @@ def wait_until_symbol_from_list_of_symbols_is_read_from_console(symbols, message
         pressed = pressed.lower()
 
 
+def execute_intro():
+    print_intro()
+    symbol = 'c'
+    message = 'Press c for continue ...'
+    wait_until_symbol_from_list_of_symbols_is_read_from_console([symbol], message)
+    new_screen()
+
+
+def wait_for_continue_command():
+    symbol = 'c'
+    message = 'Press c for continue ...'
+    wait_until_symbol_from_list_of_symbols_is_read_from_console([symbol], message)
+
+
+def start_game():
+    symbol = 's'
+    message = 'Press s to start a the game ...'
+    wait_until_symbol_from_list_of_symbols_is_read_from_console([symbol], message)
+    new_screen()
+
+
 def create_hero():
     print('Now enter name and title for your hero:')
     print('Example: Bron, Dragonslayer\n')
@@ -68,6 +88,7 @@ def create_hero():
     h = Hero(name=name, title=title, health=100, mana=100, mana_regeneration_rate=2)
     print('Information for hero:\n')
     h.print_hero()
+    wait_for_continue_command()
     return h
 
 
@@ -77,8 +98,14 @@ def print_hero_current_state(hero):
     info.append(hero.known_as())
     info.append('HEALTH = ' + str(hero.health))
     info.append('MANA = ' + str(hero.mana))
-    info.append('WEAPON = ' + str(hero.weapon)[9:])
-    info.append('SPELL = ' + str(hero.spell)[7:])
+    if str(hero.weapon)[9:] == '':
+        info.append('WEAPON = ' + 'None')
+    else:
+        info.append('WEAPON = ' + str(hero.weapon)[9:])
+    if str(hero.spell)[7:] == '':
+        info.append('SPELL = ' + 'None')
+    else:
+        info.append('SPELL = ' + str(hero.spell)[7:])
     max_len = max([len(i) for i in info])
     for i in range(max_len + 2):
         upper_border += '*'
@@ -101,8 +128,23 @@ def print_navigation_legend():
     print('NAVIGATION: w --> up\n'
           '            s --> down\n'
           '            a --> left\n'
-          '            d --> right')
+          '            d --> right\n'
+          '            x --> attack')
     print('\n')
+
+
+def wait_for_move():
+    symbols = ['w', 's', 'a', 'd', 'x']
+    message = 'Press w,s,a, d to move or x to attack from distance by spell ...\n'
+    pressed = wait_until_symbol_from_list_of_symbols_is_read_from_console(symbols, message)
+    return pressed
+
+
+def read_direction_from_console():
+    list_of_symbols = ['w', 's', 'a', 'd']
+    message = 'Press w,s,a or d to select direction'
+    symbol_pressed = wait_until_symbol_from_list_of_symbols_is_read_from_console(list_of_symbols, message)
+    return convert_symbol_pressed_to_direction(symbol_pressed)
 
 
 def convert_symbol_pressed_to_direction(symbol_pressed):
@@ -116,94 +158,88 @@ def convert_symbol_pressed_to_direction(symbol_pressed):
         return 'right'
 
 
-def read_direction_from_console():
-    list_of_symbols = ['w', 's', 'a', 'd']
-    message = 'Press w,s,a or d to select direction'
-    symbol_pressed = wait_until_symbol_from_list_of_symbols_is_read_from_console(list_of_symbols, message)
-    return convert_symbol_pressed_to_direction(symbol_pressed)
+def show_attack_from_distance_when_having_spell(dungeon, direction):
+    print('Hero attack ', direction)
+    dungeon.hero_attack()
+    wait_for_continue_command()
+
+def show_attack_screen(dungeon):
+    new_screen()
+    print_dungeon_map(dungeon)
+    print()
+    direction = read_direction_from_console()
+    if dungeon.hero.spell is None:
+        new_screen()
+        print('You do not have any spells to attack.\n'\
+              'Move to find treasures which might give you spells!\n')
+        wait_for_continue_command()
+    else:
+        show_attack_from_distance_when_having_spell(dungeon, direction)
 
 
-def attack_from_distance(dungeon):
-    print('Do you want to attack from distance by spell before moving?')
-    symbols = ['y', 'n']
-    message = 'y for YES, n for NO'
-    answer = wait_until_symbol_from_list_of_symbols_is_read_from_console(symbols, message)
-    if answer == 'y':
-        print('\nChose direction for spell: ')
-        direction = read_direction_from_console()
-        print('Attack ', direction)
-        print()
-        #dungeon.hero_attack(direction)
-        #if attack ok - start fight
-    return answer
+def show_treasure_screen(treasure):
+    new_screen()
+    print('You just received:')
+    print(treasure)
+    print()
+    wait_for_continue_command()
 
 
-def execute_move(dungeon):
-    print('Press w,s,a or d to move ...\n')
-    correct = False
-    while correct is False:
-        direction = read_direction_from_console()
-        result = dungeon.move_hero(direction)
-        if result is True:
-            print('You moved your hero ', direction)
-            correct = True
-        elif result == False:
-            print('You cannot go {dir}, try different move\n'.format(dir=direction))
-        elif result == 'E':
-            print('Your way is blocked by an enemy, you need to fight him in order to continue ...')
-            #start a fight
-            correct = True
+def select_screen_depending_on_pressed_key(dungeon, hero, pressed):
+    if pressed == 'x':
+        show_attack_screen(dungeon)
+    else:
+        direction = convert_symbol_pressed_to_direction(pressed)
+        move_result = dungeon.move_hero(direction)
+        if move_result == 'E':
+            #fight_enemy_screen
+            pass
+        elif move_result == 'C':
+            #checkpoint_screen
+            pass
+        elif move_result is True:
+            pass
+        elif move_result is False:
+            pass
         else:
-            print('Congratulations! You found a treasure.')
-            print(result)
-            correct = True
-    sleep(1)
+            show_treasure_screen(move_result)
+        
 
 
-def show_new_attack_screen(dungeon, hero):
+def show_move_screen(dungeon, hero):
     new_screen()
     print_hero_current_state(hero)
     print_navigation_legend()
     print_map_with_legend(dungeon)
+    move = wait_for_move()
+    select_screen_depending_on_pressed_key(dungeon, hero, move)
 
 
-def show_attack_screens_until_no_for_answer(dungeon, hero):
+
+def play(dungeon, hero):
+    dungeon.spawn(hero)
     while True:
-        show_new_attack_screen(dungeon, hero)
-        result = attack_from_distance(dungeon)
-        if result == 'n':
-            break
-        sleep(2)
-
-
-def show_new_move_screen(dungeon, hero):
-    new_screen()
-    print_hero_current_state(hero)
-    print_navigation_legend()
-    print_map_with_legend(dungeon)
-    execute_move(dungeon)
-
-
-def moving_process(dungeon, hero):
-    while True:
-        show_attack_screens_until_no_for_answer(dungeon, hero)
-        show_new_move_screen(dungeon, hero)
+        show_move_screen(dungeon, hero)  
 
 
 def main():
-    print_intro()
+    execute_intro()
     dungeon = Dungeon('level1.txt')
     print_map_with_legend(dungeon)
-    symbol = 's'
-    message = 'Press s for start'
-    wait_until_symbol_from_list_of_symbols_is_read_from_console([symbol], message)
-    new_screen()
+    start_game()
     hero = create_hero()
-    symbol = 'c'
-    message = 'Press c for continue ...'
-    wait_until_symbol_from_list_of_symbols_is_read_from_console([symbol], message)
-    dungeon.spawn(hero)
-    moving_process(dungeon, hero)
+    play(dungeon, hero)
+    # print_map_with_legend(dungeon)
+    # symbol = 's'
+    # message = 'Press s for start'
+    # wait_until_symbol_from_list_of_symbols_is_read_from_console([symbol], message)
+    # new_screen()
+    
+    # symbol = 'c'
+    # message = 'Press c for continue ...'
+    # wait_until_symbol_from_list_of_symbols_is_read_from_console([symbol], message)
+    # dungeon.spawn(hero)
+    # moving_process(dungeon, hero)
     
     # while True:
     #     pass
