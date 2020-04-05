@@ -15,7 +15,7 @@ class Enemy(Playable):
 
     def __repr__(self):
         return f"Enemy(health={self.health},\
-         mana={self.mana}, damage={self.damage})"
+ mana={self.mana}, damage={self.damage})"
 
     def attack(self, **kwargs):
         result_from_attack = 0

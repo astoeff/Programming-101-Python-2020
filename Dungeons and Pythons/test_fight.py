@@ -117,11 +117,22 @@ class TestFight(unittest.TestCase):
         h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
         h.equip(Weapon(name="The Axe of Destiny", damage=40))
         e = Enemy()
-        h.mana = 0
 
         Fight(h, e, distance=2)
 
         self.assertEqual(h.attacking, PLAYER_ATTACK_BY_SPELL_STRING)
+
+    def test_with_spell_and_weapon_with_distance_and_no_mana_should_move(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
+        h.equip(Weapon(name="The Axe of Destiny", damage=40))
+        e = Enemy()
+        h.mana = 0
+
+        f = Fight(h, e, distance=2)
+
+        self.assertEqual(f.distance, 1)
 
 
 if __name__ == '__main__':

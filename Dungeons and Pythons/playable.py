@@ -70,3 +70,5 @@ class Playable:
                 else:
                     return 0
             raise ValueError('Invalid item for attack given')
+        else:
+            return None

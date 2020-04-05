@@ -1,6 +1,9 @@
 from constants import (PLAYER_ATTACK_BY_SPELL_STRING,
                        PLAYER_ATTACK_BY_WEAPON_STRING)
+from enemy import Enemy
+from hero import Hero
 from playable import Playable
+from treasure import Spell, Weapon
 
 
 def flip_direction(direction):
@@ -27,7 +30,8 @@ class Fight:
         self.hero = hero
         self.enemy = enemy
         self.distance = distance
-        self.direction = flip_direction(direction)
+        self.direction = direction
+        self.opposite_direction = flip_direction(direction)
 
         self.hero.enough_mana = True
         self.enemy.enough_mana = False
@@ -35,17 +39,20 @@ class Fight:
         self.happened = (f'''
 A fight is started between our {self.hero} and {self.enemy}''')
 
-        while self.hero.is_alive() and self.enemy.is_alive():
+        while True:
             self.hero_on_turn()
-            self.enemy_on_turn()
-            break
+            if not self.enemy.is_alive():
+                self.happened += (f'''
+Enemy is dead
+''')
+                break
 
-        if self.hero.is_alive():
-            self.happened += (f'''
-Enemy is dead''')
-        else:
-            self.happened += (f'''
-Hero is dead''')
+            self.enemy_on_turn()
+            if not self.hero.is_alive():
+                self.happened += (f'''
+Hero is dead
+''')
+                break
 
     def __repr__(self):
         return self.happened
@@ -64,48 +71,82 @@ Hero is dead''')
                         if playable.enough_mana:
                             playable.enough_mana = False
                             self.happened += (f'''
-Hero does not have mana for another {self.hero.spell}.''')
+Hero does not have mana for another {self.hero.spell.name}.''')
                 else:
                     playable.attacking = PLAYER_ATTACK_BY_SPELL_STRING
             else:
                 playable.attacking = PLAYER_ATTACK_BY_WEAPON_STRING
-        else:
+        elif playable.can_cast():
             playable.attacking = PLAYER_ATTACK_BY_SPELL_STRING
-
-        if playable.attacking == PLAYER_ATTACK_BY_WEAPON_STRING:
-            self.happened += (f'''
-Hero hits with {self.hero.weapon})''')
         else:
-            self.happened += (f'''
+            self.move(playable)
+            playable.attacking = None
+
+        if playable.attacking:
+            if playable.attacking == PLAYER_ATTACK_BY_WEAPON_STRING:
+                if isinstance(playable, Hero):
+                    self.happened += (f'''
+Hero hits with {self.hero.weapon.name}''')
+                elif isinstance(playable, Enemy):
+                    try:
+                        self.happened += (f'''
+Enemy hits with {self.enemy.weapon.name}''')
+                    except AttributeError:
+                        self.attacking = 0
+                        self.happened += (f'''
+Enemy hits hero''')
+                else:
+                    raise ValueError
+            elif playable.attacking == PLAYER_ATTACK_BY_SPELL_STRING:
+                if isinstance(playable, Hero):
+                    self.happened += (f'''
 Hero casts a {self.hero.spell.name}, hits enemy''')
+                elif isinstance(playable, Enemy):
+                    self.happened += (f'''
+Enemy casts a {self.enemy.spell.name}, hits hero''')
+                else:
+                    raise ValueError
+            else:
+                raise ValueError
 
     def hero_on_turn(self):
         self.set_attack(self.hero)
-
-        damage = self.hero.attack(by=self.hero.attacking)
-        self.enemy.take_damage(damage)
-        self.happened += f''' for {damage} dmg.\
-         Enemy health is {self.enemy.health}'''
+        if self.hero.attacking:
+            damage = self.hero.attack(by=self.hero.attacking)
+            self.enemy.take_damage(damage)
+            self.happened += f''' for {damage} dmg.\
+ Enemy health is {self.enemy.health}'''
 
     def enemy_on_turn(self):
-        if self.distance:
-            if self.enemy.spell:
-                if self.enemy.can_cast():
-                    self.enemy.enough_mana = True
-                    attack = PLAYER_ATTACK_BY_SPELL_STRING
-                else:
-                    if self.enemy.enough_mana:
-                        self.enemy.enough_mana = False
-                        self.happened += (f'''
-Enemy does not have mana for another {self.hero.spell}.''')
-                    self.move_enemy()
+        self.set_attack(self.enemy)
+        if self.enemy.attacking:
+            if self.enemy.attacking:
+                damage = self.enemy.attack(by=self.enemy.attacking)
             else:
-                self.move_enemy()
-        elif self.enemy.weapon:
-            pass
+                damage = self.enemy.attack()
+            self.hero.take_damage(damage)
+            self.happened += f''' for {damage} dmg.\
+ Hero health is {self.hero.health}'''
 
-    def move_enemy(self):
+    def move(self, playable):
         self.distance -= 1
-        self.happened += (f'''
-Enemy moves one square to the {self.direction} in order to get to the hero.\
- This is his move.''')
+        if isinstance(playable, Enemy):
+            self.happened += (f'''
+Enemy moves one square to the {self.opposite_direction} in\
+ order to get to the hero. This is his move.''')
+        elif isinstance(playable, Hero):
+            self.happened += (f'''
+Hero moves one square to the {self.direction} in\
+ order to get to the enemy. This is his move.''')
+        else:
+            raise ValueError
+
+
+if __name__ == '__main__':
+    h = Hero(name="Bron", title="Dragonslayer",
+             health=100, mana=100, mana_regeneration_rate=2)
+    h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
+    h.equip(Weapon(name="The Axe of Destiny", damage=20))
+    e = Enemy()
+
+    print(Fight(h, e))
