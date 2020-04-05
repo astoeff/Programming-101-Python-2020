@@ -19,19 +19,32 @@ class TestDungeon(unittest.TestCase):
         self.assertIsInstance(a, Dungeon)
         self.assertEqual(a.to_string("test.txt"), string)
 
-    def test_to_list(self):
+    def test_validate_map_with_unequal_lengths_of_map_rows(self):
         string = ('''S.##.....T
+#T##..###.
+#.###E###
+#.E...###.
+###T#####G''')
+
+        with self.assertRaises(AssertionError):
+            Dungeon.from_string(string)
+
+    def test_to_list(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string('''S.##.....T
 #T##..###.
 #.###E###E
 #.E...###.
 ###T#####G''')
-        expected = ([['S', '.', '#', '#', '.', '.', '.', '.', '.', 'T'],
+        a.spawn(h)
+        expected = ([['H', '.', '#', '#', '.', '.', '.', '.', '.', 'T'],
                     ['#', 'T', '#', '#', '.', '.', '#', '#', '#', '.'],
                     ['#', '.', '#', '#', '#', 'E', '#', '#', '#', 'E'],
                     ['#', '.', 'E', '.', '.', '.', '#', '#', '#', '.'],
                     ['#', '#', '#', 'T', '#', '#', '#', '#', '#', 'G']])
 
-        a = Dungeon.from_string(string)
+        a.get_current_position()
 
         self.assertEqual(expected, a.list_map)
 
@@ -121,6 +134,62 @@ class TestDungeon(unittest.TestCase):
         treasure = a.pick_treasure()
 
         self.assertIsNotNone(treasure)
+
+    def test_get_current_position_with_the_very_first(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string('''S.##.....T
+#T##..###.
+#.###E###E
+#.E...###.
+###T#####G''')
+        a.spawn(h)
+
+        current_position = a.get_current_position()
+
+        self.assertEqual(current_position, (0, 0))
+
+    def test_get_current_position_with_first_last(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string('''..##.....S
+#T##..###.
+#.###E###E
+#.E...###.
+###T#####G''')
+        a.spawn(h)
+
+        current_position = a.get_current_position()
+
+        self.assertEqual(current_position, (9, 0))
+
+    def test_get_current_position_with_last_last(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string('''..##......
+#G##..###.
+#.###E###E
+#.E...###.
+###T#####S''')
+        a.spawn(h)
+
+        current_position = a.get_current_position()
+
+        self.assertEqual(current_position, (9, 4))
+
+    def test_get_current_position_with_second_second(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        a = Dungeon.from_string('''..##......
+#S##..###.
+#.###E###E
+#.E...###.
+###T#####G''')
+        a.spawn(h)
+
+        current_position = a.get_current_position()
+
+        self.assertEqual(current_position, (1, 1))
 
 
 class TestMoveHero(unittest.TestCase):
@@ -332,21 +401,156 @@ class TestMoveHero(unittest.TestCase):
         self.assertTrue(moved_successfully, "cannot move onto a treasure")
 
 
-# class TestHeroAttack(unittest.TestCase):
-#     def test_by_spell_with_no_enemy_in_casting_range(self):
-#         h = Hero(name="Bron", title="Dragonslayer",
-#                  health=100, mana=100, mana_regeneration_rate=2)
-#         h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
-#         a = Dungeon.from_string('''..##.....T
-# .S##..###.
-# #.###E###E
-# #.E...###.
-# ###.#####G''')
-#         a.spawn(h)
+class TestEnemyInCastingRange(unittest.TestCase):
+    def test_with_right_with_enemy_behind_wall_returns_false(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
+        a = Dungeon.from_string('''..##.....T
+..##..###.
+#.#S#E###E
+#.E...###.
+###.#####G''')
+        a.spawn(h)
 
-#         attack = a.hero_attack(by=PLAYER_ATTACK_BY_SPELL_STRING)
+        result = a.enemy_in_casting_range('right')
 
-#         self.assertEqual(attack, "Nothing in casting range 2")
+        self.assertFalse(result, "attempt to attack through the wall")
+
+    def test_with_left_with_enemy_behind_wall_returns_false(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
+        a = Dungeon.from_string('''..##.....T
+..##..###.
+#.#.#E#S#E
+#.E...###.
+###.#####G''')
+        a.spawn(h)
+
+        result = a.enemy_in_casting_range('left')
+
+        self.assertFalse(result, "attempt to attack through the wall")
+
+    def test_with_up_with_enemy_behind_wall_returns_false(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
+        a = Dungeon.from_string('''..##.....T
+..##..###.
+#.#.#E###E
+#.E...####
+###.##G##S''')
+        a.spawn(h)
+
+        result = a.enemy_in_casting_range('up')
+
+        self.assertFalse(result, "attempt to attack through the wall")
+
+    def test_with_down_with_enemy_behind_wall_returns_false(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
+        a = Dungeon.from_string('''..##.....T
+..S#..###.
+#.#.#E###E
+#.E...###.
+###.#####G''')
+        a.spawn(h)
+
+        result = a.enemy_in_casting_range('down')
+
+        self.assertFalse(result, "attempt to attack through the wall")
+
+    def test_with_right_with_enemy_in_spell_range_returns_true(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
+        a = Dungeon.from_string('''..##.....T
+..##..###.
+#.#S.E###E
+#.E...###.
+###.#####G''')
+        a.spawn(h)
+
+        result = a.enemy_in_casting_range('right')
+
+        self.assertTrue(result, "cannot attack right")
+
+    def test_with_left_with_enemy_in_spell_range_returns_true(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
+        a = Dungeon.from_string('''..##.....T
+..##..###.
+#.#..E###E
+#.E.S.###.
+###.#####G''')
+        a.spawn(h)
+
+        result = a.enemy_in_casting_range('left')
+
+        self.assertTrue(result, "cannot attack left")
+
+    def test_with_up_with_enemy_in_spell_range_returns_true(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
+        a = Dungeon.from_string('''..##.....T
+..##..###.
+#.#.E###E.
+#.E...###.
+##S.#####G''')
+        a.spawn(h)
+
+        result = a.enemy_in_casting_range('up')
+
+        self.assertTrue(result, "cannot attack up")
+
+    def test_with_down_with_enemy_in_spell_range_returns_true(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
+        a = Dungeon.from_string('''..##.....T
+..##..###.
+#.S.E###E.
+#.E...###.
+##..#####G''')
+        a.spawn(h)
+
+        result = a.enemy_in_casting_range('down')
+
+        self.assertTrue(result, "cannot attack down")
+
+    def test_with_unvalid_direction_returns_false(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
+        a = Dungeon.from_string('''..##.....T
+..##..###.
+#.S.E###E.
+#.E...###.
+##..#####G''')
+        a.spawn(h)
+
+        result = a.enemy_in_casting_range('downleft')
+
+        self.assertFalse(result, "unvalid direction")
+
+    def test_by_spell_with_no_enemy_in_casting_range(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
+        h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
+        a = Dungeon.from_string('''..##.....T
+.S##..###.
+#.###E###E
+#.E...###.
+###.#####G''')
+        a.spawn(h)
+
+        attack = a.hero_attack(by=PLAYER_ATTACK_BY_SPELL_STRING, direction='down')
+
+        self.assertEqual(attack, "Nothing in casting range 2")
 
 
 if __name__ == '__main__':
