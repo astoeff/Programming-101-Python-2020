@@ -1,27 +1,28 @@
 from dungeon import Dungeon
 import subprocess
-from time import sleep
 from hero import Hero
 from help_library import get_character
-from treasure import Treasure
+from treasure import Treasure, Weapon
 
 
 def print_intro():
     new_screen()
-    intro = 'Hi, a game has just started!\n\n' \
-    'You are put in a magic dungeon with TREASURES (T) ' \
-    'and your task is to make through the exit (G), but be carefull!\n' \
-    'There are ENEMIES (E) that you need to fight and obstacles (#).\n' \
+    intro = 'Hi, a game has just started!\n\n'\
+    'You are put in a magic dungeon with TREASURES (T) '\
+    'and your task is to make through the exit (G), but be carefull!\n'\
+    'There are ENEMIES (E) that you need to fight and obstacles (#).\n'\
     'You can attack your enemies from a distance by spell but only if the range of the spell allows it.\n'\
-    'To make it easier for you, there are checkpoints (C) in the dungeon.\n' \
+    'To make it easier for you, there are checkpoints (C) in the dungeon.\n'\
     'Your hero respawns on the latest checkpoint.\n'\
     'If you are dead and have not go through any checkpoints this life, you lose the game!\n'\
     'Good luck!\n'
     print(intro)
 
+
 def print_dungeon_map(dungeon):
     print('This is your map:')
     print(dungeon.map)
+
 
 def print_legend():
     print('LEGEND:')
@@ -29,11 +30,13 @@ def print_legend():
     print('G - exit of the dungeon         ' + 'T - treasure')
     print('# - obstacle                    ' + 'E - enemy')
 
+
 def print_map_with_legend(dungeon):
     print_dungeon_map(dungeon)
     print()
     print_legend()
     print('\n')
+
 
 def new_screen():
     bashCommand = "clear"
@@ -51,7 +54,7 @@ def wait_until_symbol_from_list_of_symbols_is_read_from_console(symbols, message
         if correct_symbol_read is True:
             return pressed
             break
-        if pressed != None:
+        if pressed is not None:
             print(str(pressed))
         print(message)
         pressed = str(get_character())[2]
@@ -86,6 +89,7 @@ def create_hero():
     title = input('Title: ')
     new_screen()
     h = Hero(name=name, title=title, health=100, mana=100, mana_regeneration_rate=2)
+    h.equip(Weapon(name='knife', damage=10))
     print('Information for hero:\n')
     h.print_hero()
     wait_for_continue_command()
@@ -101,7 +105,7 @@ def print_hero_current_state(hero):
     if str(hero.weapon)[9:] == '':
         info.append('WEAPON = ' + 'None')
     else:
-        info.append('WEAPON = ' + str(hero.weapon)[9:])
+        info.append('WEAPON = ' + str(hero.weapon)[8:])
     if str(hero.spell)[7:] == '':
         info.append('SPELL = ' + 'None')
     else:
@@ -160,8 +164,13 @@ def convert_symbol_pressed_to_direction(symbol_pressed):
 
 def show_attack_from_distance_when_having_spell(dungeon, direction):
     print('Hero attack ', direction)
-    dungeon.hero_attack()
+    print()
+    result = dungeon.hero_attack(by='spell', direction=direction)
+    print()
+    print(result)
     wait_for_continue_command()
+    # if type(result) == Fight:
+
 
 def show_attack_screen(dungeon):
     new_screen()
@@ -170,7 +179,7 @@ def show_attack_screen(dungeon):
     direction = read_direction_from_console()
     if dungeon.hero.spell is None:
         new_screen()
-        print('You do not have any spells to attack.\n'\
+        print('You do not have any spells to attack.\n'
               'Move to find treasures which might give you spells!\n')
         wait_for_continue_command()
     else:
@@ -192,10 +201,10 @@ def select_screen_depending_on_pressed_key(dungeon, hero, pressed):
         direction = convert_symbol_pressed_to_direction(pressed)
         move_result = dungeon.move_hero(direction)
         if move_result == 'E':
-            #fight_enemy_screen
+#fight_enemy_screen
             pass
         elif move_result == 'C':
-            #checkpoint_screen
+#checkpoint_screen
             pass
         elif move_result is True:
             pass
@@ -203,7 +212,6 @@ def select_screen_depending_on_pressed_key(dungeon, hero, pressed):
             pass
         else:
             show_treasure_screen(move_result)
-        
 
 
 def show_move_screen(dungeon, hero):
@@ -215,11 +223,30 @@ def show_move_screen(dungeon, hero):
     select_screen_depending_on_pressed_key(dungeon, hero, move)
 
 
+def show_dead_screen():
+    new_screen()
+    print('You are dead ...')
+    wait_for_continue_command()
+
 
 def play(dungeon, hero):
     dungeon.spawn(hero)
     while True:
-        show_move_screen(dungeon, hero)  
+        show_move_screen(dungeon, hero)
+        if not dungeon.hero.is_alive():
+            show_dead_screen()
+            break
+
+
+def show_game_over_screen():
+    new_screen()
+    print('*********GAME OVER****************')
+    print()
+    symbols = ['y', 'n']
+    message = 'Would you like to play another game? Press y or n'
+    pressed = wait_until_symbol_from_list_of_symbols_is_read_from_console(symbols, message)
+    if pressed == 'y':
+        main()
 
 
 def main():
@@ -229,20 +256,7 @@ def main():
     start_game()
     hero = create_hero()
     play(dungeon, hero)
-    # print_map_with_legend(dungeon)
-    # symbol = 's'
-    # message = 'Press s for start'
-    # wait_until_symbol_from_list_of_symbols_is_read_from_console([symbol], message)
-    # new_screen()
-    
-    # symbol = 'c'
-    # message = 'Press c for continue ...'
-    # wait_until_symbol_from_list_of_symbols_is_read_from_console([symbol], message)
-    # dungeon.spawn(hero)
-    # moving_process(dungeon, hero)
-    
-    # while True:
-    #     pass
+    show_game_over_screen()
 
 
 if __name__ == '__main__':

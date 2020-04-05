@@ -14,8 +14,8 @@ class Enemy(Playable):
         self.spell = choose_random_spell_from_file()
 
     def __repr__(self):
-        return f"Enemy(health={self.health},\
- mana={self.mana}, damage={self.damage})"
+        return "Enemy(health={h},\
+ mana={m}, damage={d})".format(h=self.health, m=self.mana, d=self.damage)
 
     def attack(self, **kwargs):
         result_from_attack = None

@@ -1,6 +1,8 @@
 from choose import choose_random_treasure_from_file
 from constants import (PLAYER_ATTACK_BY_SPELL_STRING,
                        PLAYER_ATTACK_BY_WEAPON_STRING)
+from fight import Fight
+from enemy import Enemy
 
 
 class Dungeon:
@@ -98,14 +100,6 @@ class Dungeon:
                 i += 1
             else:
                 self.list_map[i].append(symbol)
-        # with open(file, 'r') as f:
-        #     i = 0
-        #     for line in f.readlines():
-        #         self.map.append([])
-        #         for symbol in line:
-        #             if symbol != '\n':
-        #                 self.map[i].append(symbol)
-        #         i += 1
 
     def pick_treasure(self, string=None):
         treasure = choose_random_treasure_from_file(self.treasures_file)
@@ -152,12 +146,11 @@ class Dungeon:
     def hero_attack(self, by, direction):
         if by == PLAYER_ATTACK_BY_SPELL_STRING:
             if not self.enemy_in_casting_range(direction):
-                return f"Nothing in casting range {self.hero.spell.cast_range}"
+                return "Nothing in casting range {x}".format(x=self.hero.spell.cast_range)
             else:
                 return Fight(self.hero, Enemy(),
                              distance=self.distance, direction=direction)
         elif by == PLAYER_ATTACK_BY_WEAPON_STRING:
-            return f"Weapon range is 0!"
+            return "Weapon range is 0!"
         else:
-            return f"Cannot attack by {by}"
-
+            return "Cannot attack by {x}".format(x=by)

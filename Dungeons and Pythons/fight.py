@@ -36,22 +36,17 @@ class Fight:
         self.hero.enough_mana = True
         self.enemy.enough_mana = True
 
-        self.happened = (f'''
-A fight is started between our {self.hero} and {self.enemy}''')
+        self.happened = 'A fight is started between our {h} and {e}\n'.format(h=self.hero, e=self.enemy)
 
         while True:
             self.hero_on_turn()
             if not self.enemy.is_alive():
-                self.happened += (f'''
-Enemy is dead
-''')
+                self.happened += 'Enemy is dead'
                 break
 
             self.enemy_on_turn()
             if not self.hero.is_alive():
-                self.happened += (f'''
-Hero is dead
-''')
+                self.happened += 'Hero is dead'
                 break
 
     def __repr__(self):
@@ -70,31 +65,26 @@ Hero is dead
             else:
                 if self.hero.spell and self.hero.enough_mana:
                     self.hero.enough_mana = False
-                    self.happened += (f'''
-Hero does not have mana for another {self.hero.spell.name}.''')
+                    self.happened +='Hero does not have mana for another ' + self.hero.spell.name
                 if self.hero.weapon:
                     self.hero.attacking = PLAYER_ATTACK_BY_WEAPON_STRING
                 else:
                     self.hero.attacking = 0
-                    self.happened += f'''
-Hero has nothing to do.'''
+                    self.happened += 'Hero has nothing to do.'
         elif self.hero.can_cast():
             self.hero.attacking = PLAYER_ATTACK_BY_SPELL_STRING
         else:
             if self.hero.spell and self.hero.enough_mana:
                     self.hero.enough_mana = False
-                    self.happened += (f'''
-Hero does not have mana for another {self.hero.spell.name}.''')
+                    self.happened += 'Hero does not have mana for another ' + self.hero.spell.name
             self.move_hero()
             self.hero.attacking = None
 
         if self.hero.attacking:
             if self.hero.attacking == PLAYER_ATTACK_BY_WEAPON_STRING:
-                self.happened += (f'''
-Hero hits with {self.hero.weapon.name}''')
+                self.happened += 'Hero hits with ' + self.hero.weapon.name + '. '
             elif self.hero.attacking == PLAYER_ATTACK_BY_SPELL_STRING:
-                self.happened += (f'''
-Hero casts a {self.hero.spell.name}, hits enemy''')
+                self.happened += 'Hero casts a ' + self.hero.spell.name + ', hits enemy'
             else:
                 raise ValueError
 
@@ -116,13 +106,11 @@ Hero casts a {self.hero.spell.name}, hits enemy''')
                 self.enemy.attacking = 0
                 if self.enemy.spell and self.enemy.enough_mana:
                         self.enemy.enough_mana = False
-                        self.happened += (f'''
-Enemy does not have mana for another {self.enemy.spell.name}.''')
+                        self.happened += 'Enemy does not have mana for another '  + self.enemy.spell.name + '.\n'
                 if self.enemy.weapon:
                     self.enemy.attacking = PLAYER_ATTACK_BY_WEAPON_STRING
                 else:
-                    self.happened += (f'''
-Enemy hits hero''')
+                    self.happened += 'Enemy hits hero'
         elif self.enemy.can_cast():
             if self.enemy.spell.cast_range >= self.distance:
                 self.enemy.attacking = PLAYER_ATTACK_BY_SPELL_STRING
@@ -132,18 +120,15 @@ Enemy hits hero''')
         else:
             if self.enemy.spell and self.enemy.enough_mana:
                         self.enemy.enough_mana = False
-                        self.happened += (f'''
-Enemy does not have mana for another {self.enemy.spell.name}.''')
+                        self.happened += 'Enemy does not have mana for another ' + self.enemy.spell.name + '.\n'
             self.move_enemy()
             self.enemy.attacking = None
 
         if self.enemy.attacking is not None:
             if self.enemy.attacking == PLAYER_ATTACK_BY_WEAPON_STRING:
-                self.happened += (f'''
-Enemy hits with {self.enemy.weapon.name}''')
+                self.happened += 'Enemy hits with ' + self.enemy.weapon.name
             elif self.enemy.attacking == PLAYER_ATTACK_BY_SPELL_STRING:
-                self.happened += (f'''
-Enemy casts a {self.enemy.spell.name}, hits hero''')
+                self.happened += 'Enemy casts a ' + self.enemy.spell.name + ', hits hero'
             else:
                 pass # self.enemy.attacking == 0
 
@@ -152,8 +137,7 @@ Enemy casts a {self.enemy.spell.name}, hits hero''')
         if self.hero.attacking:
             damage = self.hero.attack(by=self.hero.attacking)
             self.enemy.take_damage(damage)
-            self.happened += f''' for {damage} dmg.\
- Enemy health is {self.enemy.health}'''
+            self.happened += ' for {d} dmg. Enemy health is {h}'.format(d=damage, h=self.enemy.health) + '.\n'
 
     def enemy_on_turn(self):
         self.set_enemy_attack()
@@ -164,26 +148,22 @@ Enemy casts a {self.enemy.spell.name}, hits hero''')
                 damage = self.enemy.attack()
 
             self.hero.take_damage(damage)
-            self.happened += f''' for {damage} dmg.\
- Hero health is {self.hero.health}'''
+            self.happened += ' for {d} dmg. Hero health is {h}'.format(d=damage, h=self.hero.health) + '.\n'
         else:
             pass # enemy only moves
 
     def move_hero(self):
         if self.hero.weapon:
             self.distance -= 1
-            self.happened += (f'''
-Hero moves one square {self.direction} in\
- order to get to the enemy. This is his move.''')
+            self.happened += 'Hero moves one square {d} in\
+ order to get to the enemy. This is his move.\n'.format(d=self.direction)
         else:
-            self.happened += f'''
-Hero has nothing to do'''
+            self.happened += 'Hero has nothing to do.\n'
 
     def move_enemy(self):
         self.distance -= 1
-        self.happened += (f'''
-Enemy moves one square {self.opposite_direction} in\
- order to get to the hero. This is his move.''')
+        self.happened += 'Enemy moves one square {d} in\
+ order to get to the hero. This is his move.\n'.format(d=self.opposite_direction)
 
 
 if __name__ == '__main__':
