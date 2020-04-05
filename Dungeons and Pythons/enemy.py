@@ -18,7 +18,7 @@ class Enemy(Playable):
  mana={self.mana}, damage={self.damage})"
 
     def attack(self, **kwargs):
-        result_from_attack = 0
+        result_from_attack = None
         try:
             result_from_attack = super().attack(**kwargs)
         except Exception as e:

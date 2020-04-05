@@ -72,8 +72,17 @@ Hero is dead
                             playable.enough_mana = False
                             self.happened += (f'''
 Hero does not have mana for another {self.hero.spell.name}.''')
-                else:
+                elif playable.can_cast():
                     playable.attacking = PLAYER_ATTACK_BY_SPELL_STRING
+                else:
+                    playable.attacking = 0
+                    if isinstance(playable, Hero):
+                        self.happened += f'''
+Hero has nothing to do.'''
+                    elif isinstance(playable, Enemy):
+                        self.enemy.attacking = 0
+                        self.happened += (f'''
+Enemy hits hero''')
             else:
                 playable.attacking = PLAYER_ATTACK_BY_WEAPON_STRING
         elif playable.can_cast():
@@ -88,11 +97,11 @@ Hero does not have mana for another {self.hero.spell.name}.''')
                     self.happened += (f'''
 Hero hits with {self.hero.weapon.name}''')
                 elif isinstance(playable, Enemy):
-                    try:
+                    if self.enemy.weapon:
                         self.happened += (f'''
 Enemy hits with {self.enemy.weapon.name}''')
-                    except AttributeError:
-                        self.attacking = 0
+                    else:
+                        self.enemy.attacking = 0
                         self.happened += (f'''
 Enemy hits hero''')
                 else:
@@ -120,12 +129,11 @@ Enemy casts a {self.enemy.spell.name}, hits hero''')
     def enemy_on_turn(self):
         self.set_attack(self.enemy)
         if self.enemy.attacking:
-            if self.enemy.attacking:
-                damage = self.enemy.attack(by=self.enemy.attacking)
-            else:
-                damage = self.enemy.attack()
-            self.hero.take_damage(damage)
-            self.happened += f''' for {damage} dmg.\
+            damage = self.enemy.attack(by=self.enemy.attacking)
+        else:
+            damage = self.enemy.attack()
+        self.hero.take_damage(damage)
+        self.happened += f''' for {damage} dmg.\
  Hero health is {self.hero.health}'''
 
     def move(self, playable):
@@ -145,7 +153,7 @@ Hero moves one square to the {self.direction} in\
 if __name__ == '__main__':
     h = Hero(name="Bron", title="Dragonslayer",
              health=100, mana=100, mana_regeneration_rate=2)
-    h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
+    # h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
     h.equip(Weapon(name="The Axe of Destiny", damage=20))
     e = Enemy()
 
