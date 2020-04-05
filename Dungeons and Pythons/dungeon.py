@@ -79,7 +79,11 @@ class Dungeon:
 
                 return True
             elif self.list_map[new_y][new_x] == 'T':
-                return self.pick_treasure()
+                treasure = self.pick_treasure()
+                self.list_map[current_y][current_x] = '.'
+                self.list_map[new_y][new_x] = 'H'
+                self.map = self.to_string(list=self.list_map)
+                return treasure
             else:
                 return self.list_map[new_y][new_x]
         except IndexError:
@@ -104,7 +108,9 @@ class Dungeon:
         #         i += 1
 
     def pick_treasure(self, string=None):
-        return choose_random_treasure_from_file(self.treasures_file)
+        treasure = choose_random_treasure_from_file(self.treasures_file)
+        self.hero.set_treasure(treasure)
+        return treasure
 
     def get_current_position(self):
         self.to_list()
@@ -154,3 +160,4 @@ class Dungeon:
             return f"Weapon range is 0!"
         else:
             return f"Cannot attack by {by}"
+

@@ -27,6 +27,7 @@ class Hero(Playable):
         print('Weapon: ', self.weapon)
         print('Spell: ', self.spell)
 
+
     def attack(self, **kwargs):
         result_from_attack = 0
         try:
@@ -36,3 +37,18 @@ class Hero(Playable):
         if result_from_attack is not None:
             return result_from_attack
         return 0
+
+    def print_hero(self):
+        print('Name: ', self.name)
+        print('Title: ', self.title)
+        print('Known as: ', self.known_as())
+        print('Health: ', self.health)
+        print('Mana: ', self.mana)
+        print('Mana regeneration rate: ', self.mana_regeneration_rate)
+        print('Weapon: ', self.weapon)
+        print('Spell: ', self.spell)
+        print()
+
+
+    def set_treasure(self, treasure):
+        treasure.set_for_player(self)
