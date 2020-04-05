@@ -76,6 +76,10 @@ Hero does not have mana for another {self.hero.spell.name}.''')
                     playable.attacking = PLAYER_ATTACK_BY_SPELL_STRING
                 else:
                     playable.attacking = 0
+                    if playable.enough_mana:
+                            playable.enough_mana = False
+                            self.happened += (f'''
+Hero does not have mana for another {self.hero.spell.name}.''')
                     if isinstance(playable, Hero):
                         self.happened += f'''
 Hero has nothing to do.'''
@@ -94,8 +98,13 @@ Enemy hits hero''')
         if playable.attacking:
             if playable.attacking == PLAYER_ATTACK_BY_WEAPON_STRING:
                 if isinstance(playable, Hero):
-                    self.happened += (f'''
+                    if self.hero.weapon:
+                        self.happened += (f'''
 Hero hits with {self.hero.weapon.name}''')
+                    else:
+                        self.hero.attacking = 0
+                        self.happened += f'''
+Hero has nothing to do.'''
                 elif isinstance(playable, Enemy):
                     if self.enemy.weapon:
                         self.happened += (f'''
@@ -154,7 +163,7 @@ if __name__ == '__main__':
     h = Hero(name="Bron", title="Dragonslayer",
              health=100, mana=100, mana_regeneration_rate=2)
     # h.learn(Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2))
-    h.equip(Weapon(name="The Axe of Destiny", damage=20))
+    # h.equip(Weapon(name="The Axe of Destiny", damage=20))
     e = Enemy()
 
     print(Fight(h, e))
