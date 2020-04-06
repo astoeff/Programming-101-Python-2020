@@ -168,9 +168,14 @@ def convert_symbol_pressed_to_direction(symbol_pressed):
 def show_attack_from_distance_when_having_spell(dungeon, direction):
     print('Hero attack ', direction)
     print()
-    fight = dungeon.hero_attack(by='spell', direction=direction)
+    result = dungeon.hero_attack(by='spell', direction=direction)
     print()
-    show_automatic_attack_screen(fight)
+    if type(result) == Fight:
+        show_automatic_attack_screen(result)
+    else:
+        new_screen()
+        print(result)
+        wait_for_continue_command()
     # if type(result) == Fight:
 
 
@@ -210,8 +215,7 @@ def select_screen_depending_on_pressed_key(dungeon, hero, pressed):
         move_result = dungeon.move_hero(direction)
         if move_result == 'G':
             show_message_screen('Congratulations, you have won!\n' + 100 * '*')
-            show_game_over_screen()
-            pass
+            return 'stop'
         elif move_result is True:
             pass
         elif move_result is False:
@@ -228,16 +232,21 @@ def show_move_screen(dungeon, hero):
     print_navigation_legend()
     print_map_with_legend(dungeon)
     move = wait_for_move()
-    select_screen_depending_on_pressed_key(dungeon, hero, move)
+    return select_screen_depending_on_pressed_key(dungeon, hero, move)
 
 
 def play(dungeon, hero):
     dungeon.spawn(hero)
     while True:
-        show_move_screen(dungeon, hero)
+        result = show_move_screen(dungeon, hero)
         if not dungeon.hero.is_alive():
             show_message_screen('You are out of checkpoints ...')
+            show_game_over_screen()
             break
+        else:
+            if result == 'stop':
+                show_game_over_screen()
+                break;
 
 
 def show_game_over_screen():
@@ -258,7 +267,6 @@ def main():
     start_game()
     hero = create_hero()
     play(dungeon, hero)
-    show_game_over_screen()
 
 
 if __name__ == '__main__':
