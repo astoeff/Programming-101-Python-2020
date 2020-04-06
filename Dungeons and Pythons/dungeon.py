@@ -10,6 +10,7 @@ class Dungeon:
         self.map = self.to_string(file=file)
         self.validate_map()
         self.treasures_file = file.replace('.txt', '_treasures.txt')
+        self.checkpoint = 0
 
     @classmethod
     def from_string(cls, string):
@@ -74,22 +75,49 @@ class Dungeon:
         try:
             if self.list_map[new_y][new_x] == '#':
                 return False
+
             elif self.list_map[new_y][new_x] == '.':
-                self.list_map[current_y][current_x] = '.'
-                self.list_map[new_y][new_x] = 'H'
-                self.map = self.to_string(list=self.list_map)
+                self.update_hero_position(current_x, current_y, new_x, new_y)
+                self.hero.take_mana(self.hero.mana_regeneration_rate)
 
                 return True
+
             elif self.list_map[new_y][new_x] == 'T':
                 treasure = self.pick_treasure()
-                self.list_map[current_y][current_x] = '.'
-                self.list_map[new_y][new_x] = 'H'
-                self.map = self.to_string(list=self.list_map)
+                self.update_hero_position(current_x, current_y, new_x, new_y)
+
                 return treasure
+
+            elif self.list_map[new_y][new_x] == 'E':
+                fight = Fight(self.hero, Enemy())
+                if self.hero.is_alive():
+                    self.update_hero_position(current_x, current_y,
+                                              new_x, new_y)
+                elif self.checkpoint:
+                    self.update_hero_position(current_x,
+                                              current_y,
+                                              self.checkpoint[1],
+                                              self.checkpoint[0])
+                    self.checkpoint = 0
+                    self.hero.health = 100
+
+                return fight
+
+            elif self.list_map[new_y][new_x] == 'C':
+                self.checkpoint = (new_y, new_x)
+                self.update_hero_position(current_x, current_y, new_x, new_y)
+
+                return True
+
             else:
                 return self.list_map[new_y][new_x]
         except IndexError:
             return False
+
+    def update_hero_position(self, current_x, current_y, new_x, new_y):
+        self.list_map[current_y][current_x] = '.'
+        self.list_map[new_y][new_x] = 'H'
+        self.map = self.to_string(list=self.list_map)
 
     def to_list(self):
         self.list_map = [[]]
@@ -104,6 +132,7 @@ class Dungeon:
     def pick_treasure(self, string=None):
         treasure = choose_random_treasure_from_file(self.treasures_file)
         self.hero.set_treasure(treasure)
+
         return treasure
 
     def get_current_position(self):
@@ -148,8 +177,17 @@ class Dungeon:
             if not self.enemy_in_casting_range(direction):
                 return "Nothing in casting range {x}".format(x=self.hero.spell.cast_range)
             else:
-                return Fight(self.hero, Enemy(),
-                             distance=self.distance, direction=direction)
+                fight = Fight(self.hero, Enemy(),
+                              distance=self.distance, direction=direction)
+                if not self.hero.is_alive() and self.checkpoint:
+                    current_x, current_y = self.get_current_position()
+                    self.update_hero_position(current_x,
+                                              current_y,
+                                              self.checkpoint[1],
+                                              self.checkpoint[0])
+                    self.checkpoint = 0
+                    self.hero.health = 100
+                return fight
         elif by == PLAYER_ATTACK_BY_WEAPON_STRING:
             return "Weapon range is 0!"
         else:

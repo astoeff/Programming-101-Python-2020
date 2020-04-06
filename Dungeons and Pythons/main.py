@@ -1,7 +1,10 @@
-from dungeon import Dungeon
-import subprocess
-from hero import Hero
 from help_library import get_character
+import subprocess
+import time
+
+from dungeon import Dungeon
+from fight import Fight
+from hero import Hero
 from treasure import Treasure, Weapon
 
 
@@ -194,24 +197,32 @@ def show_treasure_screen(treasure):
     wait_for_continue_command()
 
 
+def show_automatic_attack_screen(fight):
+    new_screen()
+    for line in str(fight).split('\n'):
+        print(line)
+        time.sleep(5)
+    print()
+    wait_for_continue_command()
+
+
 def select_screen_depending_on_pressed_key(dungeon, hero, pressed):
     if pressed == 'x':
         show_attack_screen(dungeon)
     else:
         direction = convert_symbol_pressed_to_direction(pressed)
         move_result = dungeon.move_hero(direction)
-        if move_result == 'E':
-#fight_enemy_screen
-            pass
-        elif move_result == 'C':
+        if move_result == 'C':
 #checkpoint_screen
             pass
         elif move_result is True:
             pass
         elif move_result is False:
             pass
-        else:
+        elif isinstance(move_result, Treasure):
             show_treasure_screen(move_result)
+        else:
+            show_automatic_attack_screen(move_result)
 
 
 def show_move_screen(dungeon, hero):
@@ -225,7 +236,8 @@ def show_move_screen(dungeon, hero):
 
 def show_dead_screen():
     new_screen()
-    print('You are dead ...')
+    print('You are out of checkpoints ...')
+    print()
     wait_for_continue_command()
 
 

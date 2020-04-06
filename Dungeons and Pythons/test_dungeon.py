@@ -125,11 +125,14 @@ class TestDungeon(unittest.TestCase):
         self.assertTrue(spawned_successfully3, "cannot spawn")
 
     def test_pick_treasure(self):
+        h = Hero(name="Bron", title="Dragonslayer",
+                 health=100, mana=100, mana_regeneration_rate=2)
         a = Dungeon.from_string('''S.##....ST
 #T##..###.
 #.###E###E
 #.E..S###.
 ###T#####G''')
+        a.spawn(h)
 
         treasure = a.pick_treasure()
 

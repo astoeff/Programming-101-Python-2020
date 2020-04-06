@@ -52,6 +52,9 @@ class Fight:
     def __repr__(self):
         return self.happened
 
+    def __str__(self):
+        return self.happened
+
     def set_hero_attack(self):
         if not self.distance:
             if self.hero.can_cast():
@@ -65,24 +68,24 @@ class Fight:
             else:
                 if self.hero.spell and self.hero.enough_mana:
                     self.hero.enough_mana = False
-                    self.happened +='Hero does not have mana for another ' + self.hero.spell.name
+                    self.happened +='Hero does not have mana for another ' + self.hero.spell.name + '\n'
                 if self.hero.weapon:
                     self.hero.attacking = PLAYER_ATTACK_BY_WEAPON_STRING
                 else:
                     self.hero.attacking = 0
-                    self.happened += 'Hero has nothing to do.'
+                    self.happened += 'Hero has nothing to do.\n'
         elif self.hero.can_cast():
             self.hero.attacking = PLAYER_ATTACK_BY_SPELL_STRING
         else:
             if self.hero.spell and self.hero.enough_mana:
                     self.hero.enough_mana = False
-                    self.happened += 'Hero does not have mana for another ' + self.hero.spell.name
+                    self.happened += 'Hero does not have mana for another ' + self.hero.spell.name + '\n'
             self.move_hero()
             self.hero.attacking = None
 
         if self.hero.attacking:
             if self.hero.attacking == PLAYER_ATTACK_BY_WEAPON_STRING:
-                self.happened += 'Hero hits with ' + self.hero.weapon.name + '. '
+                self.happened += 'Hero hits with ' + self.hero.weapon.name
             elif self.hero.attacking == PLAYER_ATTACK_BY_SPELL_STRING:
                 self.happened += 'Hero casts a ' + self.hero.spell.name + ', hits enemy'
             else:
