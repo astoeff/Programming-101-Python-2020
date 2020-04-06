@@ -79,6 +79,8 @@ class Dungeon:
                 self.list_map[new_y][new_x] = 'H'
                 self.map = self.to_string(list=self.list_map)
 
+                self.hero.take_mana(self.hero.mana_regeneration_rate)
+
                 return True
             elif self.list_map[new_y][new_x] == 'T':
                 treasure = self.pick_treasure()
