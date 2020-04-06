@@ -148,7 +148,7 @@ class Dungeon:
             x, y = self.get_current_position()
 
             self.distance = 0
-            while True:
+            for i in range(self.hero.spell.cast_range):
                 self.distance += 1
                 if direction == 'right':
                     x += 1
