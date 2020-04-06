@@ -74,24 +74,35 @@ class Dungeon:
         try:
             if self.list_map[new_y][new_x] == '#':
                 return False
-            elif self.list_map[new_y][new_x] == '.':
-                self.list_map[current_y][current_x] = '.'
-                self.list_map[new_y][new_x] = 'H'
-                self.map = self.to_string(list=self.list_map)
 
+            elif self.list_map[new_y][new_x] == '.':
+                self.update_hero_position(current_x, current_y, new_x, new_y)
                 self.hero.take_mana(self.hero.mana_regeneration_rate)
 
                 return True
+
             elif self.list_map[new_y][new_x] == 'T':
                 treasure = self.pick_treasure()
-                self.list_map[current_y][current_x] = '.'
-                self.list_map[new_y][new_x] = 'H'
-                self.map = self.to_string(list=self.list_map)
+                self.update_hero_position(current_x, current_y, new_x, new_y)
+
                 return treasure
+
+            elif self.list_map[new_y][new_x] == 'E':
+                fight = Fight(self.hero, Enemy())
+                if self.hero.is_alive():
+                    self.update_hero_position(current_x, current_y, new_x, new_y)
+
+                return fight
+
             else:
                 return self.list_map[new_y][new_x]
         except IndexError:
             return False
+
+    def update_hero_position(self, current_x, current_y, new_x, new_y):
+        self.list_map[current_y][current_x] = '.'
+        self.list_map[new_y][new_x] = 'H'
+        self.map = self.to_string(list=self.list_map)
 
     def to_list(self):
         self.list_map = [[]]
