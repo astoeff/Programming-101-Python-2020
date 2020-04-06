@@ -168,11 +168,17 @@ def convert_symbol_pressed_to_direction(symbol_pressed):
 def show_attack_from_distance_when_having_spell(dungeon, direction):
     print('Hero attack ', direction)
     print()
-    result = dungeon.hero_attack(by='spell', direction=direction)
+    fight = dungeon.hero_attack(by='spell', direction=direction)
     print()
-    print(result)
-    wait_for_continue_command()
+    show_automatic_attack_screen(fight)
     # if type(result) == Fight:
+
+
+def show_message_screen(message):
+    new_screen()
+    print(message)
+    print()
+    wait_for_continue_command()
 
 
 def show_attack_screen(dungeon):
@@ -181,20 +187,10 @@ def show_attack_screen(dungeon):
     print()
     direction = read_direction_from_console()
     if dungeon.hero.spell is None:
-        new_screen()
-        print('You do not have any spells to attack.\n'
-              'Move to find treasures which might give you spells!\n')
-        wait_for_continue_command()
+        show_message_screen('You do not have any spells to attack.\n'
+                            'Move to find treasures which might give you spells!\n')
     else:
         show_attack_from_distance_when_having_spell(dungeon, direction)
-
-
-def show_treasure_screen(treasure):
-    new_screen()
-    print('You just received:')
-    print(treasure)
-    print()
-    wait_for_continue_command()
 
 
 def show_automatic_attack_screen(fight):
@@ -212,15 +208,16 @@ def select_screen_depending_on_pressed_key(dungeon, hero, pressed):
     else:
         direction = convert_symbol_pressed_to_direction(pressed)
         move_result = dungeon.move_hero(direction)
-        if move_result == 'C':
-#checkpoint_screen
+        if move_result == 'G':
+            show_message_screen('Congratulations, you have won!\n' + 100 * '*')
+            show_game_over_screen()
             pass
         elif move_result is True:
             pass
         elif move_result is False:
             pass
         elif isinstance(move_result, Treasure):
-            show_treasure_screen(move_result)
+            show_message_screen('You just received:\n' + str(move_result))
         else:
             show_automatic_attack_screen(move_result)
 
@@ -234,19 +231,12 @@ def show_move_screen(dungeon, hero):
     select_screen_depending_on_pressed_key(dungeon, hero, move)
 
 
-def show_dead_screen():
-    new_screen()
-    print('You are out of checkpoints ...')
-    print()
-    wait_for_continue_command()
-
-
 def play(dungeon, hero):
     dungeon.spawn(hero)
     while True:
         show_move_screen(dungeon, hero)
         if not dungeon.hero.is_alive():
-            show_dead_screen()
+            show_message_screen('You are out of checkpoints ...')
             break
 
 

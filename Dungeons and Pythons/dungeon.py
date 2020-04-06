@@ -160,13 +160,17 @@ class Dungeon:
                     y += 1
                 else:
                     return False
+                if x < 0:
+                    return False
+                if y < 0:
+                    return False
                 try:
                     if self.list_map[y][x] != '.':
                         break
                 except IndexError:
                     return False
             if self.list_map[y][x] == 'E':
-                return True
+                return (x, y)
             else:
                 return False
         else:
@@ -174,19 +178,25 @@ class Dungeon:
 
     def hero_attack(self, by, direction):
         if by == PLAYER_ATTACK_BY_SPELL_STRING:
-            if not self.enemy_in_casting_range(direction):
+            try:
+                enemy_x, enemy_y = self.enemy_in_casting_range(direction)
+            except TypeError:
                 return "Nothing in casting range {x}".format(x=self.hero.spell.cast_range)
             else:
                 fight = Fight(self.hero, Enemy(),
                               distance=self.distance, direction=direction)
-                if not self.hero.is_alive() and self.checkpoint:
-                    current_x, current_y = self.get_current_position()
+                current_x, current_y = self.get_current_position()
+                if self.hero.is_alive():
+                    self.update_hero_position(current_x, current_y,
+                                              enemy_x, enemy_y)
+                elif self.checkpoint:
                     self.update_hero_position(current_x,
                                               current_y,
                                               self.checkpoint[1],
                                               self.checkpoint[0])
                     self.checkpoint = 0
                     self.hero.health = 100
+
                 return fight
         elif by == PLAYER_ATTACK_BY_WEAPON_STRING:
             return "Weapon range is 0!"
