@@ -236,7 +236,8 @@ def show_move_screen(dungeon, hero):
 
 def show_dead_screen():
     new_screen()
-    print('You are dead ...')
+    print('You are out of checkpoints ...')
+    print()
     wait_for_continue_command()
 
 
