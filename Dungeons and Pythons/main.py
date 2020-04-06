@@ -263,7 +263,7 @@ def show_game_over_screen():
 
 def main():
     execute_intro()
-    dungeon = Dungeon('level1.txt')
+    dungeon = Dungeon('level2.txt')
     print_map_with_legend(dungeon)
     start_game()
     hero = create_hero()
