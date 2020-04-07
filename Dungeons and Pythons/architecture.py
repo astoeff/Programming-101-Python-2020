@@ -1,4 +1,4 @@
-#Antony
+# Antony
 class Playable:
     pass
 
@@ -8,9 +8,11 @@ class Hero(Playable):
 
 
 class Enemy(Playable):
-    pass
+    damage = random.randrange(100, 200)
+    equip_spell(random.choice('spells.txt'))
 
-#Yoan
+
+# Yoan
 class Item:
     pass
 
@@ -22,10 +24,18 @@ class Spell(Item):
 class Weapon(Item):
     pass
 
-#to be continued...
+
+# to be continued...
 class Dungeon:
     pass
 
 
 class Fight:
     pass
+
+
+spells.txt:
+    -------------------------------------------------
+    spell1 = Spell(name='magic of unicorn', damage=20)
+    -------------------------------------------------
+    spell2 = Spell(name='magic of unicorn', damage=24)
