@@ -48,6 +48,7 @@ def new_screen():
 
 def wait_until_symbol_from_list_of_symbols_is_read_from_console(symbols, message):
     pressed = None
+    print(message)
     while True:
         correct_symbol_read = False
         for symbol in symbols:
@@ -58,8 +59,7 @@ def wait_until_symbol_from_list_of_symbols_is_read_from_console(symbols, message
             return pressed
             break
         if pressed is not None:
-            print(str(pressed))
-        print(message)
+            print(str(pressed), end='\r')
         pressed = str(get_character())[2]
         pressed = pressed.lower()
 
@@ -187,9 +187,6 @@ def show_message_screen(message):
 
 
 def show_attack_screen(dungeon):
-    new_screen()
-    print_dungeon_map(dungeon)
-    print()
     direction = read_direction_from_console()
     if dungeon.hero.spell is None:
         show_message_screen('You do not have any spells to attack.\n'
@@ -202,7 +199,10 @@ def show_automatic_attack_screen(fight):
     new_screen()
     for line in str(fight).split('\n'):
         print(line)
-        time.sleep(5)
+        try:
+            time.sleep(5)
+        except KeyboardInterrupt:
+            pass
     print()
     wait_for_continue_command()
 
@@ -246,7 +246,7 @@ def play(dungeon, hero):
         else:
             if result == 'stop':
                 show_game_over_screen()
-                break;
+                break
 
 
 def show_game_over_screen():
