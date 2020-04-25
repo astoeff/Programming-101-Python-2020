@@ -2,12 +2,14 @@ import constants
 
 
 class Pond():
-    def __init__(self, frogs_per_side):
-        assert frogs_per_side >= 0, 'Enter non-negative number of frogs per side'
-        self.frogs_per_side = frogs_per_side
-        self.pond_size = frogs_per_side * 2 + 1
+    def __init__(self, leftside_frogs_number, rightside_frogs_number):
+        assert leftside_frogs_number >= 0 and rightside_frogs_number >= 0, 'Enter non-negative number of frogs per side'
+        # self.frogs_per_side = frogs_per_side
+        self.leftside_frogs_number = leftside_frogs_number
+        self.rightside_frogs_number = rightside_frogs_number
+        self.pond_size = leftside_frogs_number + rightside_frogs_number + 1
         self.steps_count = 0
-        self.free_lilly_position = self.pond_size // 2
+        self.free_lilly_position = leftside_frogs_number
         self.leftside_frogs_final_position = self.pond_size - 1
         self.rightside_frogs_final_position = 0
 
@@ -18,7 +20,7 @@ class Pond():
 
         pond += constants.FREE_LILLY_SYMBOL
 
-        for pos in range(0, self.free_lilly_position):
+        for pos in range(0, self.rightside_frogs_number):
             pond += constants.RIGHT_FROG_SYMBOL
 
         self.pond_string = pond

@@ -39,8 +39,9 @@ def message_display(pond, text, dis, lenght = 650, width = 100):
 
 
 if __name__ == '__main__':
-    frogs_pers_side = int(input('Enter number of frogs per side: '))
-    pond = Pond(frogs_pers_side)
+    leftside_frogs_number = int(input('Enter number of frogs for the left side: '))
+    rightside_frogs_number = int(input('Enter number of frogs for the right side: '))
+    pond = Pond(leftside_frogs_number, rightside_frogs_number)
     pond.set_pond_string()
     pygame.init()
     dis = pygame.display.set_mode((1500, 500))
