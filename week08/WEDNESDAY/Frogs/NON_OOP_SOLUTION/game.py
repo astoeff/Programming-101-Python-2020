@@ -1,5 +1,4 @@
 from utils import *
-import constants
 import time
 
 
@@ -7,11 +6,11 @@ def create_pond(pond_size, rose_frogs, blue_frogs, free_lily):
     pond = ''
     for pos in range(pond_size):
         if pos == free_lily:
-            pond += constants.FREE_LILLY_SYMBOL
+            pond += '_'
         elif pos in rose_frogs:
-            pond += constants.ROSE_FROG_SYMMBOL
+            pond += '@'
         else:
-            pond += constants.BLUE_FROG_SYMBOL
+            pond += '#'
     return pond
 
 
@@ -41,7 +40,16 @@ def swap_frog_position_and_lily_position_in_pond_string(pond, frog_position, fre
     return ''.join(pond_as_array)
 
 
-def move_rose_frog()
+def move_rose_frog(pond, rose_frogs, position_in_list_of_rose_movable_frog, free_lily):
+    swapper = rose_frogs[position_in_list_of_rose_movable_frog]
+    rose_frogs[position_in_list_of_rose_movable_frog] = free_lily
+    free_lily = swapper
+    pond_as_array = list(pond)
+    pond_as_array[rose_frogs[position_in_list_of_rose_movable_frog]] = '@'
+    pond_as_array[free_lily] = '_'
+    pond = ''.join(pond_as_array)
+    return free_lily
+
 
 def play(frogs_per_side):
     assert frogs_per_side >= 0, 'Enter non-negative number of frogs per side'

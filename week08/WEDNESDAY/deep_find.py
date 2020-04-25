@@ -1,4 +1,4 @@
-from collections.abc import Iterable   # drop `.abc` with Python 2.7 or lower
+#from collections.abc import Iterable   # drop `.abc` with Python 2.7 or lower
 
 
 # def is_iterable(obj):
