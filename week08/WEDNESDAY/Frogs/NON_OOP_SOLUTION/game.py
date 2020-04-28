@@ -126,4 +126,4 @@ def play(frogs_per_side):
     print(f'\nSolved in {step_count} steps')
 
 
-play(5)
+play(50)
