@@ -1,0 +1,3 @@
+SELECT name
+FROM MOVIEEXEC
+WHERE networth > 10000000

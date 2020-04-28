@@ -1,0 +1,3 @@
+DELETE
+FROM STUDIO
+WHERE address LIKE "%5%"

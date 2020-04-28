@@ -1,0 +1,13 @@
+ALTER TABLE STUDIO
+ADD COLUMN PRESNAME varchar(100);
+
+UPDATE STUDIO
+SET presname = 'Antoni Stoev'
+
+SELECT presname
+FROM STUDIO
+WHERE name = 'MGM'
+
+
+
+​

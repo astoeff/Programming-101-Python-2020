@@ -1,0 +1,3 @@
+SELECT address
+FROM STUDIO
+WHERE name = "MGM"
