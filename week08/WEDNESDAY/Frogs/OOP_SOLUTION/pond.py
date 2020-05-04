@@ -4,7 +4,6 @@ import constants
 class Pond():
     def __init__(self, leftside_frogs_number, rightside_frogs_number):
         assert leftside_frogs_number >= 0 and rightside_frogs_number >= 0, 'Enter non-negative number of frogs per side'
-        # self.frogs_per_side = frogs_per_side
         self.leftside_frogs_number = leftside_frogs_number
         self.rightside_frogs_number = rightside_frogs_number
         self.pond_size = leftside_frogs_number + rightside_frogs_number + 1
