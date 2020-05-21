@@ -5,39 +5,49 @@ import string
 from setup_database import setup_database
 from gateway import UrlGateway
 from datetime import datetime
+from sqlalchemy.exc import OperationalError
 
-# responce = requests.get('https://register.start.bg/')
-def func():
-    setup_database()
-    gate = UrlGateway()
-    gate.update_table_with_url_data('https://www.start.bg/')
-    responce = requests.get('https://www.start.bg/')
+
+def find_all_links_of_url_html_content(url):
+    responce = requests.get(url)
     responce.encoding = 'utf-8'
     content = responce.content
-    soup = BeautifulSoup(content, 'html.parser')
-    links = soup.find_all('a')
-    count = 0
-    # reg = "href=\"http[" + ''.join(string.printable) + "]*'.'bg[" + ''.join(string.printable) + "]*\""
-    reg = re.compile("href=\"http[" + ''.join(string.printable) + "]*\.bg/")
-    distinct_page_links = set([])
+    content_in_html = BeautifulSoup(content, 'html.parser')
+    links = content_in_html.find_all('a')
+    return links
+
+
+def get_links_of_url(url, reg):
+    links = find_all_links_of_url_html_content(url)
     for link in links:
         search_result = reg.search(str(link))
         if bool(search_result):
             link_addr = search_result.group(0).split('\"')[1].split('/')
-            l = ''.join(link_addr[:3]) + '/'
+            l = link_addr[0] + '//' + link_addr[2]
             link_without_www = re.sub('www.', '', l)
-            # distinct_page_links.add(re.sub('www.', '', l))
+            gate = UrlGateway()
             gate.update_table_with_url_data(link_without_www)
+            gate.close()
 
-    gate.set_datetime_visited('https://www.start.bg/', datetime.now())
+    gate = UrlGateway()
+    gate.set_datetime_visited(url, datetime.now())
     gate.close()
-# count = 1
-# for link in distinct_page_links:
-#     print(f'{count}. {link}')
-#     count += 1
 
 
 if __name__ == '__main__':
-    func()
-    gate = UrlGateway()
-    print(gate.select_first_non_visited().content)
+    reg = re.compile("href=\"http[" + ''.join(string.printable) + "]*\.bg/")
+    while True:
+        try:
+            setup_database()
+            while True:
+                gate = UrlGateway()
+                url_content = gate.select_first_non_visited_and_not_processing().content
+                gate.set_true_processing(url_content)
+                try:
+                    get_links_of_url(url_content, reg)
+                    print('OK')
+                except requests.exceptions.ConnectionError:
+                    gate.set_datetime_visited(url_content, datetime.now())
+                gate.close()
+        except OperationalError:
+            pass

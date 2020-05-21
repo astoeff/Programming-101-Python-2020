@@ -22,7 +22,13 @@ class UrlGateway:
             self.db.session.rollback()
 
     def set_datetime_visited(self, content, datetime_visited):
-        self.db.session.query(Url).filter(Url.content == content).update({Url.visited: datetime_visited})
+        self.db.session.query(Url).filter(Url.content == content).\
+            update({Url.visited: datetime_visited, Url.processing: True})
+        self.db.commit()
+
+    def set_true_processing(self, content):
+        self.db.session.query(Url).filter(Url.content == content).\
+            update({Url.processing: True})
         self.db.commit()
 
     def select_visited(self):
@@ -30,8 +36,8 @@ class UrlGateway:
         self.db.commit()
         return url
 
-    def select_first_non_visited(self):
-        url = self.db.session.query(Url).filter(Url.visited.is_(None)).first()
+    def select_first_non_visited_and_not_processing(self):
+        url = self.db.session.query(Url).filter(Url.visited.is_(None), Url.processing.is_(False)).first()
         self.db.commit()
         return url
 
