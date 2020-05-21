@@ -30,6 +30,11 @@ class UrlGateway:
         self.db.commit()
         return url
 
+    def select_first_non_visited(self):
+        url = self.db.session.query(Url).filter(Url.visited.is_(None)).first()
+        self.db.commit()
+        return url
+
     def close(self):
         self.db.close()
 
