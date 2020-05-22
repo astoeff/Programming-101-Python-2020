@@ -36,18 +36,21 @@ def get_links_of_url(url, reg):
 
 if __name__ == '__main__':
     reg = re.compile("href=\"http[" + ''.join(string.printable) + "]*\.bg/")
+    setup_database()
     while True:
         try:
-            setup_database()
+            
             while True:
                 gate = UrlGateway()
                 url_content = gate.select_first_non_visited_and_not_processing().content
                 gate.set_true_processing(url_content)
+                gate.close()
                 try:
                     get_links_of_url(url_content, reg)
                     print('OK')
                 except requests.exceptions.ConnectionError:
+                    gate = UrlGateway()
                     gate.set_datetime_visited(url_content, datetime.now())
-                gate.close()
+                    gate.close()
         except OperationalError:
             pass

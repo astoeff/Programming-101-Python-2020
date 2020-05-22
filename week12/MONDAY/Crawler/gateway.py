@@ -41,6 +41,11 @@ class UrlGateway:
         self.db.commit()
         return url
 
+    def select_by_datetime(self, start, end):
+        urls = self.db.session.query(Url).filter(Url.visited >= start, Url.visited <= end).all()
+        self.db.commit()
+        return urls
+
     def close(self):
         self.db.close()
 
