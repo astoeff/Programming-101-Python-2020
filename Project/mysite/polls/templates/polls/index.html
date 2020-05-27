@@ -1,0 +1,17 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
+<form style="background-color:Wheat;">
+<h1 style="color:MidnightBlue;" align="center">СТАНИ БОГАТ</h1>
+{% if latest_question_list %}
+    <ul>
+    {% for category in latest_question_list %}
+        <li><a href="{% url 'polls:questions' category.price %}" style="color:MidnightBlue;">{{ category }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
+</form>
+
+
