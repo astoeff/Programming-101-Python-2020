@@ -1,7 +1,7 @@
 {% load static %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
-<form style="background-color:Wheat;">
+<form style="background-color: Wheat">
 {% csrf_token %}
 <h1  style="color:MidnightBlue;" align="center">{{ category.price }}</h1>
 
@@ -9,16 +9,29 @@
 {% if category.question_set.all %}
 	<ul>
 		{% for question in category.question_set.all %}
-        <li><a href="{% url 'polls:q_detail' question.id %}" style="color:MidnightBlue;">{{ question.question_text }}</a></li>
+        <li><a href="{% url 'polls:q_detail' question.id %}" style="color:#00008B;">{{ question.question_text }}</a></li>
     	{% endfor %}
     </ul>
 {% else %}
-	<p style="color:MidnightBlue;" align="center">No questions available for this category</p>
+	<p style="color:#00008B;" align="center">No questions available for this category</p>
 {% endif %}
-<a href="{% url 'polls:index' %}" style="color:MidnightBlue;">Choose another category</a>
+<a href="{% url 'polls:index' %}" style="color:#00008B;">Choose another category</a>
 </form>
 
 
+
+<!-- {% load static %}
+
+
+{% if latest_question_list %}
+    <ul>
+    {% for question in latest_question_list %}
+        <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %} -->
 <!-- {% if latest_question_list %}
     <ul>
     {% for category in latest_question_list %}

@@ -8,7 +8,11 @@ class Category(models.Model):
     price = models.IntegerField(default=100, unique=True)
 
     def __str__(self):
-        return str(self.price)
+        str_representation = str(self.price)
+        if len(str_representation) > 3:
+            str_representation = str(self.price // 1000) + ' ' + str(self.price % 1000)
+            str_representation = str_representation + '0' * (len(str(self.price)) - len(str_representation) + 1)
+        return str_representation
 
 
 class Question(models.Model):
